@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
 
+
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -38,10 +39,17 @@ export async function POST(req: Request) {
       ],
       onFinish: async ({ text }) => {
         try {
-          const project = await prisma.project.upsert({
-            where: { name: projectName || 'Untitled Project' },
-            create: { name: projectName || 'Untitled Project' },
-            update: {},
+          // Find existing project by name or create with new ID
+    const existingProject = await prisma.project.findFirst({
+      where: { name: projectName || 'Untitled Project' }
+    });
+    
+    const projectId = existingProject?.id || crypto.randomUUID();
+    
+    const project = await prisma.project.upsert({
+      where: { id: projectId },
+      create: { id: projectId, name: projectName || 'Untitled Project' },
+      update: {}
           });
 
           const maxVersion = await prisma.bRD.findFirst({
