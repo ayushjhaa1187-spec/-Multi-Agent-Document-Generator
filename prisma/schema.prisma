@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  documents   BRD[]    @relation("ProjectBRDs")
+
+  @@index([createdAt])
+}
+
+model BRD {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation("ProjectBRDs", fields: [projectId], references: [id], onDelete: Cascade)
+  version       Int      @default(1)
+  content       Json?    // Stores structured sections: { executive_summary, business_objectives, scope, requirements, etc. }
+  rawInput      String   @db.Text // Original user input/notes
+  generatedBy   String   @default("gpt-4o") // Model used for generation
+  status        String   @default("draft") // draft, reviewed, approved
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([projectId, version])
+  @@index([projectId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model AIConversation {
+  id            String   @id @default(cuid())
+  projectId     String   // For linking to a project if needed
+  messages      Message[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+model Message {
+  id              String           @id @default(cuid())
+  conversationId  String
+  conversation    AIConversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role            String           // "user" or "assistant"
+  content         String           @db.Text
+  stage           String?          // "clarify", "generate", etc.
+  createdAt       DateTime         @default(now())
+
+  @@index([conversationId])
+  @@index([role])
+}
