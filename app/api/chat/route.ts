@@ -4,12 +4,37 @@ import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
 
-
-export const maxDuration = 30;
+export const maxDuration = 60; // Increased from 30s to handle longer documents
 
 export async function POST(req: Request) {
   try {
+    // Input validation
     const { messages, projectName, stage } = await req.json();
+    
+    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid messages format' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (!projectName || typeof projectName !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid project name' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify database connection
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+    } catch (dbError) {
+      console.error('Database connection failed:', dbError);
+      return new Response(
+        JSON.stringify({ error: 'Database connection failed' }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Stage 1: BRD Planner Agent
     const plannerResult = await streamText({
@@ -19,18 +44,22 @@ export async function POST(req: Request) {
     });
 
     const plannerText = await plannerResult.text;
-
-    // Check if clarification needed
-    const needsClarification =
-      stage !== 'generate' &&
-      /\?\s*$/.test(plannerText.trim().split('\n').slice(-1)[0] || '');
+    
+    // Improved clarification detection
+    const needsClarification = 
+      stage !== 'generate' && 
+      (plannerText.includes('?') && 
+       (plannerText.toLowerCase().includes('could') || 
+        plannerText.toLowerCase().includes('would') ||
+        plannerText.toLowerCase().includes('please clarify') ||
+        plannerText.split('\n').some(line => line.trim().endsWith('?'))));
 
     if (needsClarification) {
       return plannerResult.toDataStreamResponse();
     }
 
-    // Stage 2: Requirement Writer Agent
-    const writerResult = streamText({
+    // Stage 2: Requirement Writer Agent - NOW WITH AWAIT
+    const writerResult = await streamText({
       model: openai('gpt-4o'),
       system: REQUIREMENT_WRITER_SYSTEM_PROMPT,
       messages: [
@@ -39,17 +68,27 @@ export async function POST(req: Request) {
       ],
       onFinish: async ({ text }) => {
         try {
+          // Validate text before saving
+          if (!text || text.trim().length === 0) {
+            console.warn('Empty text received from AI model');
+            return;
+          }
+
           // Find existing project by name or create with new ID
-    const existingProject = await prisma.project.findFirst({
-      where: { name: projectName || 'Untitled Project' }
-    });
-    
-    const projectId = existingProject?.id || crypto.randomUUID();
-    
-    const project = await prisma.project.upsert({
-      where: { id: projectId },
-      create: { id: projectId, name: projectName || 'Untitled Project' },
-      update: {}
+          const existingProject = await prisma.project.findFirst({
+            where: { name: projectName || 'Untitled Project' }
+          });
+          
+          const projectId = existingProject?.id || crypto.randomUUID();
+          
+          const project = await prisma.project.upsert({
+            where: { id: projectId },
+            create: { 
+              id: projectId, 
+              name: projectName || 'Untitled Project',
+              description: messages[0]?.content || ''
+            },
+            update: { updatedAt: new Date() }
           });
 
           const maxVersion = await prisma.bRD.findFirst({
@@ -62,13 +101,20 @@ export async function POST(req: Request) {
             data: {
               projectId: project.id,
               version: (maxVersion?.version || 0) + 1,
-              content: { raw: text },
+              content: { 
+                raw: text,
+                generatedAt: new Date().toISOString(),
+                model: 'gpt-4o'
+              },
               rawInput: messages[messages.length - 1]?.content || '',
               status: 'draft',
             },
           });
+
+          console.log(`✓ BRD saved: Project ${project.id}, Version ${(maxVersion?.version || 0) + 1}`);
         } catch (error) {
           console.error('Database save error:', error);
+          // Don't throw - allow streaming to continue
         }
       },
     });
@@ -76,9 +122,24 @@ export async function POST(req: Request) {
     return writerResult.toDataStreamResponse();
   } catch (error) {
     console.error('API error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    
+    // Check if it's an OpenAI API error
+    if (error instanceof Error && error.message.includes('API')) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'AI Service Error',
+          message: 'OpenAI API request failed. Check your API key.' 
+        }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
+    return new Response(
+      JSON.stringify({ 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
