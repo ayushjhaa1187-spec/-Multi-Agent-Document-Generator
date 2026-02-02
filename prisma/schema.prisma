@@ -17,7 +17,6 @@ model Project {
   documents   BRD[]    @relation("ProjectBRDs")
   
   @@index([createdAt])
-  @@index([name])
 }
 
 model BRD {
