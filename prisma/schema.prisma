@@ -3,14 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Project {
-  id          String   @id @default(cuid())
-  name        String   @unique @db.VarChar(255)
-  description String?  @db.Text
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -21,13 +21,13 @@ model Project {
 }
 
 model BRD {
-  id          String   @id @default(cuid())
-  projectId   String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  projectId   String   @db.ObjectId
   project     Project  @relation("ProjectBRDs", fields: [projectId], references: [id], onDelete: Cascade)
   
   version     Int      @default(1)
   content     Json?
-  rawInput    String   @db.Text
+  rawInput    String
   generatedBy String   @default("gpt-4o")
   status      String   @default("draft")
   
@@ -41,7 +41,7 @@ model BRD {
 }
 
 model AIConversation {
-  id          String   @id @default(cuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   projectId   String
   messages    Message[]
   
@@ -53,12 +53,12 @@ model AIConversation {
 }
 
 model Message {
-  id             String   @id @default(cuid())
-  conversationId String
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId String   @db.ObjectId
   conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
   role           String
-  content        String   @db.Text
+  content        String
   stage          String?
   
   createdAt      DateTime @default(now())
