@@ -1,25 +1,36 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
-  
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const [error, setError] = useState<string | null>(null);
+
+  const { messages, input, handleInputChange, handleSubmit, isLoading, stop } = useChat({
     api: '/api/chat',
     body: {
       projectName,
       stage,
     },
     onFinish: (message) => {
-      // Check if we need to move to generation stage
-      if (stage === 'clarify' && message.content.includes('Now generating')) {
+      setError(null);
+      if (stage === 'clarify' && message.content.toLowerCase().includes('shall') || message.content.toLowerCase().includes('requirement')) {
         setStage('generate');
       }
     },
+    onError: (error) => {
+      console.error('Chat error:', error);
+      setError(`Error: ${error.message || 'Failed to get response from API'}`);
+    },
   });
+
+  useEffect(() => {
+    if (isLoading) {
+      setError(null);
+    }
+  }, [isLoading]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
@@ -49,14 +60,22 @@ export default function BRDGenerator() {
           </div>
         )}
 
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
+            <p className="text-red-800 font-semibold">Error</p>
+            <p className="text-red-600 text-sm mt-1">{error}</p>
+          </div>
+        )}
+
         {/* Chat Messages */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 min-h-[400px] max-h-[600px] overflow-y-auto">
-          {messages.length === 0 && projectName && (
+          {messages.length === 0 && projectName && !isLoading && (
             <div className="text-center text-gray-500 py-20">
               <p className="text-xl">Start by describing your project requirements...</p>
             </div>
           )}
-          
+
           <div className="space-y-4">
             {messages.map((message) => (
               <div
@@ -75,11 +94,17 @@ export default function BRDGenerator() {
                 </div>
               </div>
             ))}
-            
+
             {isLoading && (
               <div className="flex items-center space-x-2 text-gray-500">
                 <div className="animate-spin h-5 w-5 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
                 <span>Generating...</span>
+                <button
+                  onClick={() => stop()}
+                  className="text-xs ml-auto px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded text-gray-700"
+                >
+                  Stop
+                </button>
               </div>
             )}
           </div>
@@ -93,7 +118,7 @@ export default function BRDGenerator() {
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                placeholder={stage === 'clarify' ? "Describe your requirements..." : "Provide additional details..."}
+                placeholder={stage === 'clarify' ? 'Describe your requirements...' : 'Provide additional details...'}
                 className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 disabled={isLoading}
               />
@@ -105,18 +130,22 @@ export default function BRDGenerator() {
                 {isLoading ? 'Sending...' : 'Send'}
               </button>
             </div>
-            
+
             {/* Stage Indicator */}
             <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-600">
-              <span className={`px-3 py-1 rounded-full ${
-                stage === 'clarify' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-200 text-gray-600'
-              }`}>
+              <span
+                className={`px-3 py-1 rounded-full ${
+                  stage === 'clarify' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-200 text-gray-600'
+                }`}
+              >
                 1. Clarification
               </span>
               <span className="text-gray-400">→</span>
-              <span className={`px-3 py-1 rounded-full ${
-                stage === 'generate' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'
-              }`}>
+              <span
+                className={`px-3 py-1 rounded-full ${
+                  stage === 'generate' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'
+                }`}
+              >
                 2. Generation
               </span>
             </div>
