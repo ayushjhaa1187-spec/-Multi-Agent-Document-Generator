@@ -3,35 +3,35 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Project {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+  id String @id @default(cuid())
+  name String @unique
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
-  documents   BRD[]    @relation("ProjectBRDs")
+  documents BRD[] @relation("ProjectBRDs")
   
   @@index([createdAt])
 }
 
 model BRD {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  projectId   String   @db.ObjectId
-  project     Project  @relation("ProjectBRDs", fields: [projectId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+  projectId String
+  project Project @relation("ProjectBRDs", fields: [projectId], references: [id], onDelete: Cascade)
   
-  version     Int      @default(1)
-  content     Json?
-  rawInput    String
-  generatedBy String   @default("gpt-4o")
-  status      String   @default("draft")
+  version Int @default(1)
+  content Json?
+  rawInput String
+  generatedBy String @default("gpt-4o")
+  status String @default("draft")
   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   @@unique([projectId, version])
   @@index([projectId])
@@ -40,27 +40,27 @@ model BRD {
 }
 
 model AIConversation {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  projectId   String
-  messages    Message[]
+  id String @id @default(cuid())
+  projectId String
+  messages Message[]
   
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
   @@index([projectId])
   @@index([createdAt])
 }
 
 model Message {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
-  conversationId String   @db.ObjectId
-  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+  conversationId String
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
-  role           String
-  content        String
-  stage          String?
+  role String
+  content String
+  stage String?
   
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
   
   @@index([conversationId])
   @@index([role])
