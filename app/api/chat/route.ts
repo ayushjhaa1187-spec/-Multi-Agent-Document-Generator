@@ -3,26 +3,39 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+import { z } from 'zod';
+
+const chatRequestSchema = z.object({
+  messages: z
+    .array(z.any(), {
+      required_error: 'Invalid messages format',
+      invalid_type_error: 'Invalid messages format',
+    })
+    .min(1, { message: 'Invalid messages format' }),
+  projectName: z
+    .string({
+      required_error: 'Invalid project name',
+      invalid_type_error: 'Invalid project name',
+    })
+    .min(1, { message: 'Invalid project name' }),
+  stage: z.string().optional(),
+});
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
-    const { messages, projectName, stage } = await req.json();
+    const json = await req.json();
+    const result = chatRequestSchema.safeParse(json);
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    if (!result.success) {
       return new Response(
-        JSON.stringify({ error: 'Invalid messages format' }),
+        JSON.stringify({ error: result.error.errors[0].message }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    if (!projectName || typeof projectName !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Invalid project name' }),
-        { status: 400, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    const { messages, projectName, stage } = result.data;
 
     try {
       await prisma.$queryRaw`SELECT 1`;
