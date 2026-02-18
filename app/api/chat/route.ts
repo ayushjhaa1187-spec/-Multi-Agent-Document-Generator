@@ -1,6 +1,7 @@
 import { streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
+import { ENV } from '@/lib/env';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
 
@@ -8,6 +9,15 @@ export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
+    const apiKey = req.headers.get('x-api-key');
+
+    if (apiKey !== ENV.API_SECRET_KEY) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const { messages, projectName, stage } = await req.json();
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {

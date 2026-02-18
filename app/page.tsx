@@ -10,6 +10,7 @@ export default function BRDGenerator() {
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop } = useChat({
     api: '/api/chat',
+    headers: { 'x-api-key': process.env.NEXT_PUBLIC_API_KEY || '' },
     body: {
       projectName,
       stage,

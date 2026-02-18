@@ -1,0 +1,18 @@
+npm warn deprecated @types/prettier@3.0.0: This is a stub types definition. prettier provides its own type definitions, so you do not need this installed.
+
+added 243 packages, and audited 244 packages in 53s
+
+43 packages are looking for funding
+  run `npm fund` for details
+
+6 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm notice
+npm notice New minor version of npm available! 11.7.0 -> 11.10.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.10.0
+npm notice To update run: npm install -g npm@11.10.0
+npm notice

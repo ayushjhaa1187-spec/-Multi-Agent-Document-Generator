@@ -162,6 +162,8 @@ model BRD {
 | `OPENAI_API_KEY` | OpenAI API key | Yes |
 | `DATABASE_URL` | PostgreSQL connection string | Yes |
 | `NODE_ENV` | Environment (development/production) | No |
+| `API_SECRET_KEY` | Secret key for API authentication (Server-side) | Yes |
+| `NEXT_PUBLIC_API_KEY` | API Key for client-side requests (Must match API_SECRET_KEY) | Yes |
 
 ## Future Enhancements
 
