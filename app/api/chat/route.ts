@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+import { logError } from '@/lib/logger';
 
 export const maxDuration = 60;
 
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     try {
       await prisma.$queryRaw`SELECT 1`;
     } catch (dbError) {
-      console.error('Database connection failed:', dbError);
+      logError('Database connection failed', dbError);
       return new Response(
         JSON.stringify({ error: 'Database connection failed' }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
@@ -108,14 +109,14 @@ export async function POST(req: Request) {
             `✓ BRD saved: Project ${project.id}, Version ${(maxVersion?.version || 0) + 1}`
           );
         } catch (error) {
-          console.error('Database save error:', error);
+          logError('Database save error', error);
         }
       },
     });
 
     return writerResult.toDataStreamResponse();
   } catch (error) {
-    console.error('API error:', error);
+    logError('API error', error);
 
     if (error instanceof Error && error.message.includes('API')) {
       return new Response(
