@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
-import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
+import { getBrdPlannerSystemPrompt } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
 
 export const maxDuration = 60;
@@ -34,9 +34,30 @@ export async function POST(req: Request) {
       );
     }
 
+    // Fetch context from ingested documents
+    let context = '';
+    const project = await prisma.project.findUnique({
+      where: { name: projectName },
+      include: {
+        sourceDocuments: {
+          where: { isRelevant: true },
+          include: { extractedEntities: true }
+        }
+      }
+    });
+
+    if (project && project.sourceDocuments.length > 0) {
+      context = project.sourceDocuments.map(d =>
+        `[${d.type}] Summary: ${d.processedSummary || d.content.substring(0, 200)}...
+         Entities: ${d.extractedEntities.map(e => `${e.type}: ${e.value}`).join(', ')}`
+      ).join('\n\n');
+
+      console.log(`Using context from ${project.sourceDocuments.length} documents.`);
+    }
+
     const plannerResult = await streamText({
       model: openai('gpt-4o'),
-      system: BRD_PLANNER_SYSTEM_PROMPT,
+      system: getBrdPlannerSystemPrompt(context),
       messages,
     });
 
@@ -53,6 +74,10 @@ export async function POST(req: Request) {
     if (needsClarification) {
       return plannerResult.toDataStreamResponse();
     }
+
+    // For the writer, we could also inject context, but typically the planner outline is enough.
+    // Ideally, the Writer should also see the context to extract specific details.
+    // But for now, let's stick to the prompt.
 
     const writerResult = await streamText({
       model: openai('gpt-4o'),

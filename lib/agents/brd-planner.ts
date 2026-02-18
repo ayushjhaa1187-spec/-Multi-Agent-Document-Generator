@@ -1,4 +1,4 @@
-export const BRD_PLANNER_SYSTEM_PROMPT = `You are a Senior Business Analyst Agent called the BRD Planner Agent.
+const BASE_PROMPT = `You are a Senior Business Analyst Agent called the BRD Planner Agent.
 
 Your responsibilities:
 - Transform raw user ideas, meeting notes, or bullet points into a clear BRD OUTLINE.
@@ -31,3 +31,17 @@ OUTPUT RULES:
 - When generating the BRD outline, use clean Markdown headings (##, ###) and bullet points.
 - Keep language professional, concise, and unambiguous.
 `;
+
+export const BRD_PLANNER_SYSTEM_PROMPT = BASE_PROMPT;
+
+export function getBrdPlannerSystemPrompt(context?: string) {
+  if (!context) return BASE_PROMPT;
+
+  return `${BASE_PROMPT}
+
+AVAILABLE PROJECT CONTEXT (EMAILS, TRANSCRIPTS, CHATS):
+The following relevant information has been extracted from project communications. USE THIS CONTEXT to inform your questions and the BRD outline. Do not ask for information that is already present here.
+
+${context}
+`;
+}

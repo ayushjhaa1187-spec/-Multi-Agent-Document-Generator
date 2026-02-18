@@ -1,0 +1,91 @@
+
+> multi-agent-brd-generator@1.0.0 dev
+> next dev
+
+   ▲ Next.js 15.5.12
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+Attention: Next.js now collects completely anonymous telemetry regarding usage.
+This information is used to shape Next.js' roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+https://nextjs.org/telemetry
+
+   Using tsconfig file: ./tsconfig.json
+
+   We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+   The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+	- incremental was set to true
+	- plugins was updated to add { name: 'next' }
+
+   The following mandatory changes were made to your tsconfig.json:
+
+	- isolatedModules was set to true (requirement for SWC / Babel)
+
+ ✓ Ready in 1942ms
+ ○ Compiling / ...
+ ✓ Compiled / in 8.2s (748 modules)
+ GET / 200 in 9669ms
+ ○ Compiling /api/ingest ...
+ ✓ Compiled /api/ingest in 1481ms (815 modules)
+prisma:query BEGIN IMMEDIATE
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE (`main`.`Project`.`name` = ? AND 1=1) LIMIT ? OFFSET ?
+ GET /api/documents?projectName=Enron%20Analysis 200 in 1971ms
+prisma:query SELECT `main`.`Project`.`id` FROM `main`.`Project` WHERE (`main`.`Project`.`name` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query INSERT INTO `main`.`Project` (`id`, `name`, `createdAt`, `updatedAt`) VALUES (?,?,?,?) RETURNING `id` AS `id`
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE `main`.`Project`.`id` = ? LIMIT ? OFFSET ?
+prisma:query COMMIT
+prisma:query INSERT INTO `main`.`SourceDocument` (`id`, `projectId`, `type`, `content`, `metadata`, `relevanceScore`, `isRelevant`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `projectId` AS `projectId`, `type` AS `type`, `content` AS `content`, `metadata` AS `metadata`, `relevanceScore` AS `relevanceScore`, `isRelevant` AS `isRelevant`, `processedSummary` AS `processedSummary`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`SourceDocument`.`id`, `main`.`SourceDocument`.`projectId`, `main`.`SourceDocument`.`type`, `main`.`SourceDocument`.`content`, `main`.`SourceDocument`.`metadata`, `main`.`SourceDocument`.`relevanceScore`, `main`.`SourceDocument`.`isRelevant`, `main`.`SourceDocument`.`processedSummary`, `main`.`SourceDocument`.`createdAt`, `main`.`SourceDocument`.`updatedAt` FROM `main`.`SourceDocument` WHERE (`main`.`SourceDocument`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE `main`.`Project`.`id` IN (?) LIMIT ? OFFSET ?
+Failed to process document cmlrmb2u90002j6d3r6vcts1d: Error [AI_LoadAPIKeyError]: OpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.
+    at async processDocument (lib/processing/processor.ts:15:22)
+    at async POST (app/api/ingest/route.ts:46:9)
+  13 |   if (!doc) throw new Error('Document not found');
+  14 |
+> 15 |   const { object } = await aiService.generateObject({
+     |                      ^
+  16 |     model: openai('gpt-4o'),
+  17 |     schema: z.object({
+  18 |       isRelevant: z.boolean(), {
+  cause: undefined
+}
+prisma:query INSERT INTO `main`.`SourceDocument` (`id`, `projectId`, `type`, `content`, `metadata`, `relevanceScore`, `isRelevant`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `projectId` AS `projectId`, `type` AS `type`, `content` AS `content`, `metadata` AS `metadata`, `relevanceScore` AS `relevanceScore`, `isRelevant` AS `isRelevant`, `processedSummary` AS `processedSummary`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE (`main`.`Project`.`name` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`SourceDocument`.`id`, `main`.`SourceDocument`.`projectId`, `main`.`SourceDocument`.`type`, `main`.`SourceDocument`.`content`, `main`.`SourceDocument`.`metadata`, `main`.`SourceDocument`.`relevanceScore`, `main`.`SourceDocument`.`isRelevant`, `main`.`SourceDocument`.`processedSummary`, `main`.`SourceDocument`.`createdAt`, `main`.`SourceDocument`.`updatedAt` FROM `main`.`SourceDocument` WHERE `main`.`SourceDocument`.`projectId` IN (?) ORDER BY `main`.`SourceDocument`.`createdAt` DESC LIMIT ? OFFSET ?
+ GET /api/documents?projectName=Enron%20Analysis 200 in 241ms
+prisma:query SELECT `main`.`ExtractedEntity`.`id`, `main`.`ExtractedEntity`.`sourceId`, `main`.`ExtractedEntity`.`type`, `main`.`ExtractedEntity`.`value`, `main`.`ExtractedEntity`.`context`, `main`.`ExtractedEntity`.`createdAt` FROM `main`.`ExtractedEntity` WHERE `main`.`ExtractedEntity`.`sourceId` IN (?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`SourceDocument`.`id`, `main`.`SourceDocument`.`projectId`, `main`.`SourceDocument`.`type`, `main`.`SourceDocument`.`content`, `main`.`SourceDocument`.`metadata`, `main`.`SourceDocument`.`relevanceScore`, `main`.`SourceDocument`.`isRelevant`, `main`.`SourceDocument`.`processedSummary`, `main`.`SourceDocument`.`createdAt`, `main`.`SourceDocument`.`updatedAt` FROM `main`.`SourceDocument` WHERE (`main`.`SourceDocument`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE `main`.`Project`.`id` IN (?) LIMIT ? OFFSET ?
+Failed to process document cmlrmb30o0004j6d3dq5q7qui: Error [AI_LoadAPIKeyError]: OpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.
+    at async processDocument (lib/processing/processor.ts:15:22)
+    at async POST (app/api/ingest/route.ts:46:9)
+  13 |   if (!doc) throw new Error('Document not found');
+  14 |
+> 15 |   const { object } = await aiService.generateObject({
+     |                      ^
+  16 |     model: openai('gpt-4o'),
+  17 |     schema: z.object({
+  18 |       isRelevant: z.boolean(), {
+  cause: undefined
+}
+prisma:query INSERT INTO `main`.`SourceDocument` (`id`, `projectId`, `type`, `content`, `metadata`, `relevanceScore`, `isRelevant`, `createdAt`, `updatedAt`) VALUES (?,?,?,?,?,?,?,?,?) RETURNING `id` AS `id`, `projectId` AS `projectId`, `type` AS `type`, `content` AS `content`, `metadata` AS `metadata`, `relevanceScore` AS `relevanceScore`, `isRelevant` AS `isRelevant`, `processedSummary` AS `processedSummary`, `createdAt` AS `createdAt`, `updatedAt` AS `updatedAt`
+prisma:query SELECT `main`.`SourceDocument`.`id`, `main`.`SourceDocument`.`projectId`, `main`.`SourceDocument`.`type`, `main`.`SourceDocument`.`content`, `main`.`SourceDocument`.`metadata`, `main`.`SourceDocument`.`relevanceScore`, `main`.`SourceDocument`.`isRelevant`, `main`.`SourceDocument`.`processedSummary`, `main`.`SourceDocument`.`createdAt`, `main`.`SourceDocument`.`updatedAt` FROM `main`.`SourceDocument` WHERE (`main`.`SourceDocument`.`id` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE `main`.`Project`.`id` IN (?) LIMIT ? OFFSET ?
+Failed to process document cmlrmb3460006j6d30iwtzlgs: Error [AI_LoadAPIKeyError]: OpenAI API key is missing. Pass it using the 'apiKey' parameter or the OPENAI_API_KEY environment variable.
+    at async processDocument (lib/processing/processor.ts:15:22)
+    at async POST (app/api/ingest/route.ts:46:9)
+  13 |   if (!doc) throw new Error('Document not found');
+  14 |
+> 15 |   const { object } = await aiService.generateObject({
+     |                      ^
+  16 |     model: openai('gpt-4o'),
+  17 |     schema: z.object({
+  18 |       isRelevant: z.boolean(), {
+  cause: undefined
+}
+ POST /api/ingest 200 in 2230ms
