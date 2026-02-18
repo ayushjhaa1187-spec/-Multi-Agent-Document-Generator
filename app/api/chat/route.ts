@@ -24,15 +24,6 @@ export async function POST(req: Request) {
       );
     }
 
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      return new Response(
-        JSON.stringify({ error: 'Database connection failed' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
 
     const plannerResult = await streamText({
       model: openai('gpt-4o'),
