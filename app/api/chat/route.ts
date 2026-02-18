@@ -1,4 +1,4 @@
-import { streamText } from 'ai';
+import { streamText, generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
@@ -34,13 +34,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const plannerResult = await streamText({
+    const { text: plannerText } = await generateText({
       model: openai('gpt-4o'),
       system: BRD_PLANNER_SYSTEM_PROMPT,
       messages,
     });
-
-    const plannerText = await plannerResult.text;
 
     const needsClarification =
       stage !== 'generate' &&
@@ -51,7 +49,7 @@ export async function POST(req: Request) {
           plannerText.split('\n').some((line) => line.trim().endsWith('?'))));
 
     if (needsClarification) {
-      return plannerResult.toDataStreamResponse();
+      return new Response(plannerText);
     }
 
     const writerResult = await streamText({
