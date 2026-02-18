@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+const LINE_ENDS_WITH_QUESTION_MARK_REGEX = /\?((?!\n)\s)*$/m;
 
 export const maxDuration = 60;
 
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
         (plannerText.toLowerCase().includes('could') ||
           plannerText.toLowerCase().includes('would') ||
           plannerText.toLowerCase().includes('please clarify') ||
-          plannerText.split('\n').some((line) => line.trim().endsWith('?'))));
+          LINE_ENDS_WITH_QUESTION_MARK_REGEX.test(plannerText)));
 
     if (needsClarification) {
       return plannerResult.toDataStreamResponse();
