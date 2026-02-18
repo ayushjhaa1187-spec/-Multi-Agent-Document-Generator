@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+import { saveGeneratedBRD } from '@/lib/services/project';
 
 export const maxDuration = 60;
 
@@ -68,44 +69,11 @@ export async function POST(req: Request) {
             return;
           }
 
-          const existingProject = await prisma.project.findFirst({
-            where: { name: projectName || 'Untitled Project' },
-          });
-
-          const projectId = existingProject?.id || crypto.randomUUID();
-
-          const project = await prisma.project.upsert({
-            where: { id: projectId },
-            create: {
-              id: projectId,
-              name: projectName || 'Untitled Project',
-              description: messages[0]?.content || '',
-            },
-            update: { updatedAt: new Date() },
-          });
-
-          const maxVersion = await prisma.bRD.findFirst({
-            where: { projectId: project.id },
-            orderBy: { version: 'desc' },
-            select: { version: true },
-          });
-
-          await prisma.bRD.create({
-            data: {
-              projectId: project.id,
-              version: (maxVersion?.version || 0) + 1,
-              content: {
-                raw: text,
-                generatedAt: new Date().toISOString(),
-                model: 'gpt-4o',
-              },
-              rawInput: messages[messages.length - 1]?.content || '',
-              status: 'draft',
-            },
-          });
-
-          console.log(
-            `✓ BRD saved: Project ${project.id}, Version ${(maxVersion?.version || 0) + 1}`
+          await saveGeneratedBRD(
+            projectName,
+            messages[0]?.content,
+            messages[messages.length - 1]?.content,
+            text
           );
         } catch (error) {
           console.error('Database save error:', error);
