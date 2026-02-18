@@ -68,16 +68,10 @@ export async function POST(req: Request) {
             return;
           }
 
-          const existingProject = await prisma.project.findFirst({
-            where: { name: projectName || 'Untitled Project' },
-          });
-
-          const projectId = existingProject?.id || crypto.randomUUID();
-
           const project = await prisma.project.upsert({
-            where: { id: projectId },
+            where: { name: projectName || 'Untitled Project' },
             create: {
-              id: projectId,
+              id: crypto.randomUUID(),
               name: projectName || 'Untitled Project',
               description: messages[0]?.content || '',
             },
