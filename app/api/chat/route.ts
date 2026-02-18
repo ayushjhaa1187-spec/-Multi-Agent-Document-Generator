@@ -34,13 +34,18 @@ export async function POST(req: Request) {
       );
     }
 
-    // Fetch context from ingested documents
+    // Fetch RELEVANT context from ingested documents
     let context = '';
     const project = await prisma.project.findUnique({
       where: { name: projectName },
       include: {
         sourceDocuments: {
-          where: { isRelevant: true },
+          where: {
+            isRelevant: true,
+            relevanceScore: { gte: 0.5 } // Threshold filtering
+          },
+          orderBy: { relevanceScore: 'desc' },
+          take: 20, // Limit context window
           include: { extractedEntities: true }
         }
       }
@@ -48,7 +53,7 @@ export async function POST(req: Request) {
 
     if (project && project.sourceDocuments.length > 0) {
       context = project.sourceDocuments.map(d =>
-        `[${d.type}] Summary: ${d.processedSummary || d.content.substring(0, 200)}...
+        `[${d.type}] (Relevance: ${d.relevanceScore}) Summary: ${d.processedSummary || d.content.substring(0, 200)}...
          Entities: ${d.extractedEntities.map(e => `${e.type}: ${e.value}`).join(', ')}`
       ).join('\n\n');
 
@@ -74,10 +79,6 @@ export async function POST(req: Request) {
     if (needsClarification) {
       return plannerResult.toDataStreamResponse();
     }
-
-    // For the writer, we could also inject context, but typically the planner outline is enough.
-    // Ideally, the Writer should also see the context to extract specific details.
-    // But for now, let's stick to the prompt.
 
     const writerResult = await streamText({
       model: openai('gpt-4o'),

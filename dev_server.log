@@ -89,3 +89,18 @@ Failed to process document cmlrmb3460006j6d30iwtzlgs: Error [AI_LoadAPIKeyError]
   cause: undefined
 }
  POST /api/ingest 200 in 2230ms
+ ✓ Compiled in 4.8s (294 modules)
+ ✓ Compiled in 975ms (726 modules)
+ ✓ Compiled in 1624ms (726 modules)
+ ✓ Compiled in 298ms (726 modules)
+ GET / 200 in 766ms
+ ✓ Compiled /api/documents in 476ms (453 modules)
+ GET /api/documents?projectName=Enron%20Analysis%20Project 200 in 771ms
+prisma:query SELECT 1
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE (`main`.`Project`.`name` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`SourceDocument`.`id`, `main`.`SourceDocument`.`projectId`, `main`.`SourceDocument`.`type`, `main`.`SourceDocument`.`content`, `main`.`SourceDocument`.`metadata`, `main`.`SourceDocument`.`relevanceScore`, `main`.`SourceDocument`.`isRelevant`, `main`.`SourceDocument`.`processedSummary`, `main`.`SourceDocument`.`createdAt`, `main`.`SourceDocument`.`updatedAt` FROM `main`.`SourceDocument` WHERE `main`.`SourceDocument`.`projectId` IN (?) ORDER BY `main`.`SourceDocument`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`ExtractedEntity`.`id`, `main`.`ExtractedEntity`.`sourceId`, `main`.`ExtractedEntity`.`type`, `main`.`ExtractedEntity`.`value`, `main`.`ExtractedEntity`.`context`, `main`.`ExtractedEntity`.`createdAt` FROM `main`.`ExtractedEntity` WHERE `main`.`ExtractedEntity`.`sourceId` IN (?,?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`Project`.`id`, `main`.`Project`.`name`, `main`.`Project`.`description`, `main`.`Project`.`createdAt`, `main`.`Project`.`updatedAt` FROM `main`.`Project` WHERE (`main`.`Project`.`name` = ? AND 1=1) LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`SourceDocument`.`id`, `main`.`SourceDocument`.`projectId`, `main`.`SourceDocument`.`type`, `main`.`SourceDocument`.`content`, `main`.`SourceDocument`.`metadata`, `main`.`SourceDocument`.`relevanceScore`, `main`.`SourceDocument`.`isRelevant`, `main`.`SourceDocument`.`processedSummary`, `main`.`SourceDocument`.`createdAt`, `main`.`SourceDocument`.`updatedAt` FROM `main`.`SourceDocument` WHERE `main`.`SourceDocument`.`projectId` IN (?) ORDER BY `main`.`SourceDocument`.`createdAt` DESC LIMIT ? OFFSET ?
+prisma:query SELECT `main`.`ExtractedEntity`.`id`, `main`.`ExtractedEntity`.`sourceId`, `main`.`ExtractedEntity`.`type`, `main`.`ExtractedEntity`.`value`, `main`.`ExtractedEntity`.`context`, `main`.`ExtractedEntity`.`createdAt` FROM `main`.`ExtractedEntity` WHERE `main`.`ExtractedEntity`.`sourceId` IN (?,?,?,?,?,?,?,?,?,?,?,?,?) LIMIT ? OFFSET ?
+ GET /api/documents?projectName=Enron%20Analysis%20Project 200 in 23ms
