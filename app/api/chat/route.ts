@@ -121,16 +121,17 @@ export async function POST(req: Request) {
       return new Response(
         JSON.stringify({
           error: 'AI Service Error',
-          message: 'OpenAI API request failed. Check your API key.',
+          message: 'The AI service is currently unavailable. Please try again later.',
         }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
+    // Security: Do not expose internal error details to client
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An unexpected error occurred. Please try again later.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
