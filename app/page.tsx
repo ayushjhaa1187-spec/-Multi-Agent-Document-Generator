@@ -2,6 +2,7 @@
 
 import { useChat } from 'ai/react';
 import { useState, useEffect } from 'react';
+import ChatMessage from '@/components/ChatMessage';
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
@@ -78,21 +79,11 @@ export default function BRDGenerator() {
 
           <div className="space-y-4">
             {messages.map((message) => (
-              <div
+              <ChatMessage
                 key={message.id}
-                className={`p-4 rounded-lg ${
-                  message.role === 'user'
-                    ? 'bg-indigo-100 ml-8'
-                    : 'bg-gray-100 mr-8'
-                }`}
-              >
-                <div className="font-semibold text-sm mb-1 text-gray-600">
-                  {message.role === 'user' ? 'You' : stage === 'clarify' ? 'BRD Planner' : 'Requirement Writer'}
-                </div>
-                <div className="text-gray-800 whitespace-pre-wrap">
-                  {message.content}
-                </div>
-              </div>
+                message={message}
+                stage={stage}
+              />
             ))}
 
             {isLoading && (
