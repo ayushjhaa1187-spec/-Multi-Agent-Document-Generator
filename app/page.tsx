@@ -16,7 +16,7 @@ export default function BRDGenerator() {
     },
     onFinish: (message) => {
       setError(null);
-      if (stage === 'clarify' && message.content.toLowerCase().includes('shall') || message.content.toLowerCase().includes('requirement')) {
+      if (stage === 'clarify' && shouldSwitchToGenerate(message.content)) {
         setStage('generate');
       }
     },
@@ -159,4 +159,14 @@ export default function BRDGenerator() {
       </div>
     </div>
   );
+}
+
+function shouldSwitchToGenerate(content: string): boolean {
+  // Check for specific section headers that appear in the generated BRD
+  // but are unlikely to appear in clarifying questions or casual conversation.
+  const hasFunctionalReqs = /Functional Requirements/i.test(content);
+  const hasNonFunctionalReqs = /Non-Functional Requirements/i.test(content);
+  const hasUserStories = /User Stories/i.test(content);
+
+  return hasFunctionalReqs || hasNonFunctionalReqs || hasUserStories;
 }
