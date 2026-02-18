@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+import { ENV } from '@/lib/env';
 
 export const maxDuration = 60;
 
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
     }
 
     const plannerResult = await streamText({
-      model: openai('gpt-4o'),
+      model: openai(ENV.AI_MODEL),
       system: BRD_PLANNER_SYSTEM_PROMPT,
       messages,
     });
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
     }
 
     const writerResult = await streamText({
-      model: openai('gpt-4o'),
+      model: openai(ENV.AI_MODEL),
       system: REQUIREMENT_WRITER_SYSTEM_PROMPT,
       messages: [
         ...messages,
@@ -97,7 +98,7 @@ export async function POST(req: Request) {
               content: {
                 raw: text,
                 generatedAt: new Date().toISOString(),
-                model: 'gpt-4o',
+                model: ENV.AI_MODEL,
               },
               rawInput: messages[messages.length - 1]?.content || '',
               status: 'draft',
