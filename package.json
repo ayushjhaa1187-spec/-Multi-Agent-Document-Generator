@@ -10,7 +10,9 @@
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "load:enron": "tsx scripts/load-datasets.ts",
+    "load:ami": "tsx scripts/load-ami-transcripts.ts"
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -19,8 +21,9 @@
     "ai": "^3.1.0",
     "@ai-sdk/openai": "^0.0.58",
     "@ai-sdk/anthropic": "^0.0.25",
-    "@prisma/client": "^6.0.0",
-    "axios": "^1.7.0"
+    "@prisma/client": "^6.19.2",
+    "axios": "^1.7.0",
+    "csv-parser": "^3.2.0"
   },
   "devDependencies": {
     "typescript": "^5.4.0",
@@ -30,9 +33,10 @@
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
-    "prisma": "^6.0.0",
+    "prisma": "^6.19.2",
     "@types/prettier": "^3.0.0",
-    "prettier": "^3.2.0"
+    "prettier": "^3.2.0",
+    "tsx": "^4.7.1"
   },
   "engines": {
     "node": ">=18.0.0"

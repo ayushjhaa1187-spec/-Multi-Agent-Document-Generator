@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
-import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
+import { getBrdPlannerSystemPrompt } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
 
 export const maxDuration = 60;
@@ -34,9 +34,35 @@ export async function POST(req: Request) {
       );
     }
 
+    // Fetch RELEVANT context from ingested documents
+    let context = '';
+    const project = await prisma.project.findUnique({
+      where: { name: projectName },
+      include: {
+        sourceDocuments: {
+          where: {
+            isRelevant: true,
+            relevanceScore: { gte: 0.5 } // Threshold filtering
+          },
+          orderBy: { relevanceScore: 'desc' },
+          take: 20, // Limit context window
+          include: { extractedEntities: true }
+        }
+      }
+    });
+
+    if (project && project.sourceDocuments.length > 0) {
+      context = project.sourceDocuments.map(d =>
+        `[${d.type}] (Relevance: ${d.relevanceScore}) Summary: ${d.processedSummary || d.content.substring(0, 200)}...
+         Entities: ${d.extractedEntities.map(e => `${e.type}: ${e.value}`).join(', ')}`
+      ).join('\n\n');
+
+      console.log(`Using context from ${project.sourceDocuments.length} documents.`);
+    }
+
     const plannerResult = await streamText({
       model: openai('gpt-4o'),
-      system: BRD_PLANNER_SYSTEM_PROMPT,
+      system: getBrdPlannerSystemPrompt(context),
       messages,
     });
 
@@ -68,31 +94,36 @@ export async function POST(req: Request) {
             return;
           }
 
-          const existingProject = await prisma.project.findFirst({
-            where: { name: projectName || 'Untitled Project' },
-          });
+          // Fix for ReferenceError: check project or fetch existing
+          let projectId = project?.id;
 
-          const projectId = existingProject?.id || crypto.randomUUID();
+          if (!projectId) {
+             const existingProject = await prisma.project.findUnique({
+                where: { name: projectName }
+             });
 
-          const project = await prisma.project.upsert({
-            where: { id: projectId },
-            create: {
-              id: projectId,
-              name: projectName || 'Untitled Project',
-              description: messages[0]?.content || '',
-            },
-            update: { updatedAt: new Date() },
-          });
+             if (existingProject) {
+                 projectId = existingProject.id;
+             } else {
+                 const newProject = await prisma.project.create({
+                    data: {
+                        name: projectName,
+                        description: messages[0]?.content || '',
+                    }
+                 });
+                 projectId = newProject.id;
+             }
+          }
 
           const maxVersion = await prisma.bRD.findFirst({
-            where: { projectId: project.id },
+            where: { projectId: projectId },
             orderBy: { version: 'desc' },
-            select: { version: true },
+            select: { version: true }, // Select only version to be efficient
           });
 
           await prisma.bRD.create({
             data: {
-              projectId: project.id,
+              projectId: projectId,
               version: (maxVersion?.version || 0) + 1,
               content: {
                 raw: text,
@@ -105,7 +136,7 @@ export async function POST(req: Request) {
           });
 
           console.log(
-            `✓ BRD saved: Project ${project.id}, Version ${(maxVersion?.version || 0) + 1}`
+            `✓ BRD saved: Project ${projectId}, Version ${(maxVersion?.version || 0) + 1}`
           );
         } catch (error) {
           console.error('Database save error:', error);

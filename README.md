@@ -11,7 +11,28 @@ A sophisticated Business Requirement Document (BRD) generation system powered by
 - **Structured Output**: Generates professional BRDs with Executive Summary, Functional/Non-Functional Requirements, User Personas, and Success Metrics
 - **Version Control**: Track BRD iterations and drafts in PostgreSQL
 - **Real-time Streaming**: Stream generated content to users with WebSocket support
-- **Full-stack**: Next.js frontend, Vercel AI SDK, Prisma ORM, PostgreSQL database
+- **Full-stack**: Next.js 15+ frontend, Vercel AI SDK, Prisma ORM, PostgreSQL database
+
+## 🏆 HackFest 2.0 - Problem Statement 2 Implementation
+
+### Multi-Channel Data Ingestion
+- **Enron Email Dataset**: 500K+ real business emails
+- **AMI Meeting Corpus**: 279 meeting transcripts
+- **Synthetic Chat Messages**: Slack/Teams simulations
+
+### Intelligent Noise Filtering
+- AI-powered relevance scoring (0-1 scale)
+- Filters 80%+ irrelevant communications
+- Shows "500K emails → 100K relevant" metrics
+
+### Entity Extraction
+- Stakeholders identification with roles
+- Decision tracking with timestamps
+- Timeline reconstruction across conversations
+
+### Validation
+- Compares against AMI ground truth summaries
+- Reports accuracy metrics (precision, recall)
 
 ## Tech Stack
 
@@ -38,6 +59,9 @@ A sophisticated Business Requirement Document (BRD) generation system powered by
 │       └── requirement-writer.ts  # Requirement Writer Agent
 ├── prisma/
 │   └── schema.prisma              # Database schema
+├── scripts/
+│   ├── load-datasets.ts           # Enron dataset loader
+│   └── load-ami-transcripts.ts    # AMI transcript loader
 ├── .env.local                     # Environment variables
 └── package.json
 ```
@@ -52,7 +76,7 @@ cd -Multi-Agent-Document-Generator
 
 ### 2. Install dependencies
 ```bash
-npm install
+bun install
 ```
 
 ### 3. Set up environment variables
@@ -68,12 +92,18 @@ DATABASE_URL=postgresql://user:password@localhost:5432/brd_generator
 
 ### 4. Set up database
 ```bash
-npm run db:push
+bun run db:push
 ```
 
-### 5. Run the development server
+### 5. Load Datasets (HackFest)
 ```bash
-npm run dev
+bun run load:enron
+bun run load:ami
+```
+
+### 6. Run the development server
+```bash
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -86,6 +116,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
    - Evaluates user input for vagueness
    - Asks 3-5 targeted follow-up questions if needed
    - Analyzes responses to build a structured outline
+   - **New:** Ingests context from emails and meeting transcripts
 
 2. **Stage 2: Full Document Generation (Requirement Writer Agent)**
    - Expands the outline into complete BRD sections
@@ -97,7 +128,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 Each agent has a specific role with detailed instructions:
 
-- **BRD Planner**: Structure validation, follow-up question logic
+- **BRD Planner**: Structure validation, follow-up question logic, Context Awareness
 - **Requirement Writer**: Detailed expansion, formatting, requirement standards
 
 ## API Routes
@@ -125,6 +156,7 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   documents   BRD[]
+  sourceDocuments SourceDocument[]
 }
 
 model BRD {
@@ -137,6 +169,16 @@ model BRD {
   generatedBy String   @default("gpt-4o")
   status      String   @default("draft")
   createdAt   DateTime @default(now())
+}
+
+model SourceDocument {
+  id              String   @id @default(cuid())
+  projectId       String
+  type            SourceType
+  content         String
+  metadata        Json?
+  relevanceScore  Float
+  isRelevant      Boolean
 }
 ```
 

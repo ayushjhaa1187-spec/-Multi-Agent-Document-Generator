@@ -1,0 +1,11 @@
+Meeting: Project Kickoff
+Date: 2024-01-15
+Participants: PM, Designer, Dev
+
+PM: Welcome everyone. Let's discuss the new mobile app project.
+Designer: I have some initial sketches ready.
+Dev: Great. What tech stack are we using?
+PM: We decided on React Native for cross-platform support.
+Dev: Sounds good. I'll set up the repo today.
+PM: The deadline for the MVP is March 1st.
+Designer: That's tight, but doable if we stick to the core features.

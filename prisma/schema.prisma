@@ -15,6 +15,7 @@ model Project {
   updatedAt DateTime @updatedAt
   
   documents BRD[] @relation("ProjectBRDs")
+  sourceDocuments SourceDocument[]
   
   @@index([createdAt])
 }
@@ -37,4 +38,49 @@ model BRD {
   @@index([projectId])
   @@index([status])
   @@index([createdAt])
+}
+
+enum SourceType {
+  EMAIL
+  TRANSCRIPT
+  CHAT
+  OTHER
+}
+
+model SourceDocument {
+  id String @id @default(cuid())
+  projectId String
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  type SourceType
+  content String
+  metadata Json?
+
+  relevanceScore Float @default(0)
+  isRelevant Boolean @default(false)
+  processedSummary String?
+
+  extractedEntities ExtractedEntity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([type])
+  @@index([isRelevant])
+}
+
+model ExtractedEntity {
+  id String @id @default(cuid())
+  sourceId String
+  sourceDocument SourceDocument @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  type String // STAKEHOLDER, DECISION, TIMELINE, FEATURE
+  value String
+  context String?
+
+  createdAt DateTime @default(now())
+
+  @@index([sourceId])
+  @@index([type])
 }
