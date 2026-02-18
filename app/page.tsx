@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
+  const [projectNameInput, setProjectNameInput] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
 
@@ -16,13 +17,22 @@ export default function BRDGenerator() {
     },
     onFinish: (message) => {
       setError(null);
-      if (stage === 'clarify' && message.content.toLowerCase().includes('shall') || message.content.toLowerCase().includes('requirement')) {
+      if (stage === 'clarify' && (message.content.toLowerCase().includes('shall') || message.content.toLowerCase().includes('requirement'))) {
         setStage('generate');
       }
     },
     onError: (error) => {
       console.error('Chat error:', error);
-      setError(`Error: ${error.message || 'Failed to get response from API'}`);
+      const errorMsg = error?.message || 'Failed to get response from API';
+
+      // Provide user-friendly error messages
+      if (errorMsg.includes('quota') || errorMsg.includes('exceeded')) {
+        setError('💰 API Quota Exceeded: Please check your OpenAI account and billing. You may have hit your usage limit.');
+      } else if (errorMsg.includes('API key')) {
+        setError('🔑 API Key Error: Invalid or missing OpenAI API key. Please check your configuration.');
+      } else {
+        setError(`⚠️ Error: ${errorMsg}`);
+      }
     },
   });
 
@@ -32,131 +42,220 @@ export default function BRDGenerator() {
     }
   }, [isLoading]);
 
+  const handleProjectNameSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedName = projectNameInput.trim();
+
+    if (!trimmedName) {
+      setError('Project name cannot be empty. Please enter a project name.');
+      return;
+    }
+
+    if (trimmedName.length > 100) {
+      setError('Project name must be 100 characters or less.');
+      return;
+    }
+
+    setProjectName(trimmedName);
+    setProjectNameInput('');
+    setError(null);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-900 to-slate-900 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
-        <header className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-indigo-900 mb-2">
-            Multi-Agent BRD Generator
+        {/* Header */}
+        <header className="text-center mb-8 sm:mb-12">
+          <div className="inline-block mb-4 px-4 py-2 bg-purple-500/20 border border-purple-400/30 rounded-full">
+            <span className="text-purple-300 text-sm font-semibold">✨ AI-Powered Documentation</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-3">
+            BRD Generator
           </h1>
-          <p className="text-gray-600 text-lg">
-            AI-powered Business Requirement Document generation
+          <p className="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto">
+            Create professional Business Requirement Documents powered by AI agents. Define your project and get intelligent clarification questions.
           </p>
         </header>
 
-        {/* Project Name Input */}
+        {/* Project Name Input Form */}
         {!projectName && (
-          <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-            <label className="block text-lg font-semibold text-gray-700 mb-3">
-              Project Name
-            </label>
-            <input
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="Enter your project name..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
+          <div className="mb-8">
+            <form onSubmit={handleProjectNameSubmit} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+              <div className="mb-6">
+                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                  📋 Project Name
+                </label>
+                <input
+                  type="text"
+                  value={projectNameInput}
+                  onChange={(e) => setProjectNameInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleProjectNameSubmit(e as any)}
+                  placeholder="Enter your project name (e.g., E-Commerce Platform)..."
+                  className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  autoFocus
+                />
+                <p className="text-gray-400 text-xs sm:text-sm mt-2">
+                  Give your project a clear, descriptive name (max 100 characters)
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
+              >
+                Continue to Project Details →
+              </button>
+            </form>
           </div>
         )}
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-            <p className="text-red-800 font-semibold">Error</p>
-            <p className="text-red-600 text-sm mt-1">{error}</p>
+          <div className="bg-red-500/20 border border-red-500/50 backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+            <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
+              {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
+            </p>
+            <p className="text-red-200 text-xs sm:text-sm leading-relaxed">
+              {error}
+            </p>
           </div>
         )}
 
-        {/* Chat Messages */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 min-h-[400px] max-h-[600px] overflow-y-auto">
-          {messages.length === 0 && projectName && !isLoading && (
-            <div className="text-center text-gray-500 py-20">
-              <p className="text-xl">Start by describing your project requirements...</p>
-            </div>
-          )}
-
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`p-4 rounded-lg ${
-                  message.role === 'user'
-                    ? 'bg-indigo-100 ml-8'
-                    : 'bg-gray-100 mr-8'
-                }`}
-              >
-                <div className="font-semibold text-sm mb-1 text-gray-600">
-                  {message.role === 'user' ? 'You' : stage === 'clarify' ? 'BRD Planner' : 'Requirement Writer'}
-                </div>
-                <div className="text-gray-800 whitespace-pre-wrap">
-                  {message.content}
-                </div>
-              </div>
-            ))}
-
-            {isLoading && (
-              <div className="flex items-center space-x-2 text-gray-500">
-                <div className="animate-spin h-5 w-5 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
-                <span>Generating...</span>
-                <button
-                  onClick={() => stop()}
-                  className="text-xs ml-auto px-2 py-1 bg-gray-300 hover:bg-gray-400 rounded text-gray-700"
-                >
-                  Stop
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Input Form */}
+        {/* Chat Messages Area */}
         {projectName && (
-          <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={input}
-                onChange={handleInputChange}
-                placeholder={stage === 'clarify' ? 'Describe your requirements...' : 'Provide additional details...'}
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                disabled={isLoading}
-              />
+          <>
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-gray-400 text-xs sm:text-sm">Current Project</p>
+                <p className="text-white font-semibold text-lg sm:text-xl">{projectName}</p>
+              </div>
               <button
-                type="submit"
-                disabled={isLoading || !input.trim()}
-                className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                onClick={() => {
+                  setProjectName('');
+                  setProjectNameInput('');
+                }}
+                className="text-gray-400 hover:text-white text-sm transition-colors"
               >
-                {isLoading ? 'Sending...' : 'Send'}
+                Change Project
               </button>
             </div>
 
-            {/* Stage Indicator */}
-            <div className="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-600">
-              <span
-                className={`px-3 py-1 rounded-full ${
-                  stage === 'clarify' ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                1. Clarification
-              </span>
-              <span className="text-gray-400">→</span>
-              <span
-                className={`px-3 py-1 rounded-full ${
-                  stage === 'generate' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'
-                }`}
-              >
-                2. Generation
-              </span>
+            <div className="bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 mb-6 shadow-2xl min-h-[400px] sm:min-h-[500px] max-h-[600px] overflow-y-auto">
+              {messages.length === 0 && !isLoading && (
+                <div className="text-center text-gray-400 py-12 sm:py-20">
+                  <p className="text-lg sm:text-xl mb-2">🎯 Describe Your Project Requirements</p>
+                  <p className="text-sm sm:text-base">Get started by sharing what you want to build. Our AI will ask clarifying questions.</p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`p-4 sm:p-5 rounded-xl fade-in ${
+                      message.role === 'user'
+                        ? 'bg-purple-600/30 border border-purple-400/30 ml-0 sm:ml-8 text-white'
+                        : 'bg-blue-600/20 border border-blue-400/30 mr-0 sm:mr-8 text-gray-100'
+                    }`}
+                  >
+                    <div className="font-semibold text-xs sm:text-sm mb-2 text-gray-300">
+                      {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
+                    </div>
+                    <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+                      {message.content}
+                    </div>
+                  </div>
+                ))}
+
+                {isLoading && (
+                  <div className="flex items-center space-x-2 text-purple-400 animate-pulse p-4">
+                    <div className="animate-spin h-5 w-5 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+                    <span>Generating response...</span>
+                    <button
+                      onClick={() => stop()}
+                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
+                    >
+                      Stop
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </form>
+
+            {/* Input Form */}
+            <form onSubmit={handleSubmit} className="bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+              <div className="flex gap-2 sm:gap-4 mb-4">
+                <input
+                  type="text"
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  disabled={isLoading}
+                />
+                <button
+                  type="submit"
+                  disabled={isLoading || !input.trim()}
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
+                >
+                  {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
+                </button>
+              </div>
+
+              {/* Stage Indicator */}
+              <div className="flex items-center justify-center space-x-2 sm:space-x-3 text-xs sm:text-sm text-gray-400">
+                <span
+                  className={`px-3 sm:px-4 py-2 rounded-full font-semibold transition-all ${
+                    stage === 'clarify'
+                      ? 'bg-yellow-500/30 text-yellow-300 border border-yellow-400/50'
+                      : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                  }`}
+                >
+                  1️⃣ Clarification
+                </span>
+                <span className="text-gray-500">→</span>
+                <span
+                  className={`px-3 sm:px-4 py-2 rounded-full font-semibold transition-all ${
+                    stage === 'generate'
+                      ? 'bg-green-500/30 text-green-300 border border-green-400/50'
+                      : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                  }`}
+                >
+                  2️⃣ Generation
+                </span>
+              </div>
+            </form>
+          </>
         )}
 
-        {/* Info Footer */}
-        <div className="mt-8 text-center text-gray-500 text-sm">
-          <p>Powered by Vercel AI SDK • Multi-Agent Architecture</p>
+        {/* Footer */}
+        <div className="mt-8 sm:mt-12 text-center text-gray-500 text-xs sm:text-sm">
+          <p>⚡ Powered by Vercel AI SDK • Multi-Agent Architecture</p>
+          <p className="text-gray-600 text-xs mt-2">Create smart, detailed BRDs in minutes</p>
         </div>
       </div>
+
+      {/* CSS Animations */}
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .fade-in {
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .animate-in {
+          animation: fadeIn 0.4s ease-out;
+        }
+      `}</style>
     </div>
   );
 }
