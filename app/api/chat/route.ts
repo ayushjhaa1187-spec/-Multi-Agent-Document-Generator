@@ -48,7 +48,7 @@ export async function POST(req: Request) {
         (plannerText.toLowerCase().includes('could') ||
           plannerText.toLowerCase().includes('would') ||
           plannerText.toLowerCase().includes('please clarify') ||
-          plannerText.split('\n').some((line) => line.trim().endsWith('?'))));
+          /\?[^\S\n]*$/m.test(plannerText)));
 
     if (needsClarification) {
       return plannerResult.toDataStreamResponse();
