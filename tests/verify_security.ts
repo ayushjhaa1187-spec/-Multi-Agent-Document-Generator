@@ -3,18 +3,18 @@ process.env.API_SECRET_KEY = 'test-secret';
 process.env.DATABASE_URL = 'postgres://mock';
 process.env.OPENAI_API_KEY = 'mock';
 
-// Dynamic import to ensure ENV is loaded after process.env is set
-const { POST } = await import('../app/api/chat/route.ts');
+async function main() {
+  // Dynamic import to ensure ENV is loaded after process.env is set
+  const { POST } = await import('../app/api/chat/route.ts');
 
-function createRequest(headers: Record<string, string>, body: any) {
-  return new Request('http://localhost:3000/api/chat', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(body),
-  });
-}
+  function createRequest(headers: Record<string, string>, body: any) {
+    return new Request('http://localhost:3000/api/chat', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(body),
+    });
+  }
 
-async function runTests() {
   console.log('Running Security Verification Tests...');
 
   // Test 1: No API Key
@@ -66,4 +66,4 @@ async function runTests() {
   }
 }
 
-runTests();
+main().catch(console.error);
