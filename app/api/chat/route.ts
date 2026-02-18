@@ -130,7 +130,7 @@ export async function POST(req: Request) {
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An unexpected error occurred.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
