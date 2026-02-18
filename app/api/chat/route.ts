@@ -3,6 +3,7 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+import { shouldClarify } from '@/lib/clarification';
 
 export const maxDuration = 60;
 
@@ -42,13 +43,7 @@ export async function POST(req: Request) {
 
     const plannerText = await plannerResult.text;
 
-    const needsClarification =
-      stage !== 'generate' &&
-      (plannerText.includes('?') &&
-        (plannerText.toLowerCase().includes('could') ||
-          plannerText.toLowerCase().includes('would') ||
-          plannerText.toLowerCase().includes('please clarify') ||
-          plannerText.split('\n').some((line) => line.trim().endsWith('?'))));
+    const needsClarification = shouldClarify(stage, plannerText);
 
     if (needsClarification) {
       return plannerResult.toDataStreamResponse();
