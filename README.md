@@ -11,14 +11,20 @@ A sophisticated Business Requirement Document (BRD) generation system powered by
 - **Structured Output**: Generates professional BRDs with Executive Summary, Functional/Non-Functional Requirements, User Personas, and Success Metrics
 - **Version Control**: Track BRD iterations and drafts in PostgreSQL
 - **Real-time Streaming**: Stream generated content to users with WebSocket support
+- **Performance Monitoring**: Track API response times with real-time metrics
+- **Analytics Tracking**: Built-in event tracking and session management
+- **Caching System**: Redis-ready cache with in-memory fallback for embeddings
+- **Modern UI**: Advanced CSS animations, glass-morphism design, responsive layouts
 - **Full-stack**: Next.js frontend, Vercel AI SDK, Prisma ORM, PostgreSQL database
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15+ with TypeScript, Tailwind CSS
+- **Frontend**: Next.js 15+ with TypeScript, Tailwind CSS, Modern CSS Animations
 - **AI**: Vercel AI SDK with OpenAI/Anthropic models
 - **Database**: PostgreSQL with Prisma ORM
-- **Hosting**: Vercel (serverless deployment)
+- **Caching**: Redis (optional) with in-memory fallback
+- **Monitoring**: Built-in performance metrics and analytics
+- **Hosting**: Vercel (serverless deployment with CDN)
 - **Architecture**: Multi-agent pattern with orchestration
 
 ## Project Structure
@@ -27,19 +33,33 @@ A sophisticated Business Requirement Document (BRD) generation system powered by
 .
 ├── app/
 │   ├── api/
-│   │   └── chat/
-│   │       └── route.ts          # Multi-agent orchestration API
-│   ├── page.tsx                   # Main chat interface
-│   └── layout.tsx                 # App layout
+│   │   ├── chat/
+│   │   │   ├── route.ts              # Multi-agent orchestration API
+│   │   │   └── route.test.ts         # Unit tests
+│   │   ├── metrics/
+│   │   │   └── route.ts              # API performance metrics endpoint
+│   │   └── analytics/
+│   │       └── route.ts              # Analytics and event tracking endpoint
+│   ├── page.tsx                       # Main chat interface
+│   ├── globals.css                    # Enhanced styling with animations
+│   └── layout.tsx                     # App layout
 ├── lib/
-│   ├── prisma.ts                  # Prisma client instance
+│   ├── prisma.ts                      # Prisma client instance
+│   ├── performance.ts                 # Performance monitoring
+│   ├── cache.ts                       # Caching system (Redis-ready)
+│   ├── analytics.ts                   # Event tracking and analytics
 │   └── agents/
-│       ├── brd-planner.ts         # BRD Planner Agent
-│       └── requirement-writer.ts  # Requirement Writer Agent
+│       ├── brd-planner.ts             # BRD Planner Agent
+│       └── requirement-writer.ts      # Requirement Writer Agent
 ├── prisma/
-│   └── schema.prisma              # Database schema
-├── .env.local                     # Environment variables
-└── package.json
+│   └── schema.prisma                  # Database schema
+├── public/                            # Static assets (CDN cached)
+├── .env.example                       # Environment variables template
+├── next.config.js                     # Next.js configuration with CDN
+├── vercel.json                        # Vercel deployment configuration
+├── DEPLOYMENT.md                      # Deployment guide
+├── package.json
+└── tsconfig.json
 ```
 
 ## Getting Started
@@ -114,6 +134,96 @@ Request body:
 ```
 
 Response: Streaming text (uses AI SDK's `toDataStreamResponse()`)
+
+### GET /api/metrics
+
+Get real-time API performance metrics including average response time and health status.
+
+Response:
+```json
+{
+  "average_response_time_ms": 245,
+  "threshold_ms": 500,
+  "is_healthy": true,
+  "metrics_count": 42,
+  "last_10_metrics": [...]
+}
+```
+
+### GET /api/analytics
+
+Get session and event analytics including user actions, API requests, and error tracking.
+
+Response:
+```json
+{
+  "session": {
+    "sessionId": "session_xxx",
+    "startTime": "2024-02-19T...",
+    "totalEvents": 25,
+    "metrics": {
+      "totalEvents": 25,
+      "eventsByType": {...},
+      "errorRate": 0,
+      "averageResponseTime": 245
+    }
+  },
+  "recentEvents": [...]
+}
+```
+
+## Performance & Monitoring
+
+### Performance Monitoring
+- **Endpoint**: `/api/metrics`
+- **Tracks**: API response times, status codes, error rates
+- **Target**: < 500ms average response time
+- **Warning**: Logs when responses exceed threshold
+
+### Analytics Tracking
+- **Endpoint**: `/api/analytics`
+- **Tracks**: User sessions, API requests, BRD generations, errors
+- **Session Management**: Automatic session tracking with unique IDs
+- **Event Types**: API requests, user actions, errors, page views
+- **Max History**: Last 1000 events kept in memory
+
+### Caching System
+- **Type**: Redis-ready with in-memory fallback
+- **Location**: `lib/cache.ts`
+- **Features**:
+  - TTL-based expiration (default 1 hour)
+  - Automatic cleanup every 10 minutes
+  - Max 1000 entries in memory
+  - Cache key generation for embeddings
+- **Usage**:
+  ```typescript
+  import { cacheManager } from '@/lib/cache';
+
+  // Set cache
+  await cacheManager.set('key', data, 3600000);
+
+  // Get cache
+  const data = await cacheManager.get('key');
+
+  // Get stats
+  const stats = cacheManager.getStats();
+  ```
+
+## Deployment
+
+For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+### Quick Start
+1. Push to main branch
+2. Vercel automatically deploys
+3. Set environment variables in Vercel dashboard
+4. Run database migrations
+
+### Environment Variables
+See `.env.example` for complete list. Essential variables:
+- `OPENAI_API_KEY`: OpenAI API key
+- `DATABASE_URL`: PostgreSQL connection string
+- `NEXT_PUBLIC_APP_URL`: Your deployed URL
 
 ## Database Schema
 
