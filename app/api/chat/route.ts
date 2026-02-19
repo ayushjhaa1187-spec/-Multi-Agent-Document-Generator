@@ -3,21 +3,38 @@ import { openai } from '@ai-sdk/openai';
 import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
+import { recordMetric } from '@/lib/performance';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
+  const startTime = Date.now();
   try {
-    const { messages, projectName, stage } = await req.json();
+    const { messages, projectName } = await req.json();
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    // Validate messages array shape
+    const messagesValid =
+      Array.isArray(messages) &&
+      messages.length > 0 &&
+      messages.every(
+        (m) =>
+          m &&
+          typeof m === 'object' &&
+          typeof m.role === 'string' &&
+          typeof m.content === 'string' &&
+          m.content.trim().length > 0
+      );
+
+    if (!messagesValid) {
+      recordMetric('/api/chat', Date.now() - startTime, 400);
       return new Response(
         JSON.stringify({ error: 'Invalid messages format' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    if (!projectName || typeof projectName !== 'string') {
+    if (!projectName || typeof projectName !== 'string' || projectName.trim().length === 0) {
+      recordMetric('/api/chat', Date.now() - startTime, 400);
       return new Response(
         JSON.stringify({ error: 'Invalid project name' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -28,12 +45,14 @@ export async function POST(req: Request) {
       await prisma.$queryRaw`SELECT 1`;
     } catch (dbError) {
       console.error('Database connection failed:', dbError);
+      recordMetric('/api/chat', Date.now() - startTime, 503);
       return new Response(
         JSON.stringify({ error: 'Database connection failed' }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
+    // Run planner to decide flow; keep prompt identical
     const plannerResult = await streamText({
       model: openai('gpt-4o'),
       system: BRD_PLANNER_SYSTEM_PROMPT,
@@ -42,15 +61,19 @@ export async function POST(req: Request) {
 
     const plannerText = await plannerResult.text;
 
+    // Decide purely from model output; do not trust client-supplied stage
+    const lines = plannerText.split('\n').map((l) => l.trim()).filter(Boolean);
+    const allQuestions = lines.length > 0 && lines.every((l) => l.endsWith('?'));
+    const containsQuestionKeywords =
+      plannerText.toLowerCase().includes('please clarify') ||
+      plannerText.toLowerCase().includes('could') ||
+      plannerText.toLowerCase().includes('would');
     const needsClarification =
-      stage !== 'generate' &&
-      (plannerText.includes('?') &&
-        (plannerText.toLowerCase().includes('could') ||
-          plannerText.toLowerCase().includes('would') ||
-          plannerText.toLowerCase().includes('please clarify') ||
-          plannerText.split('\n').some((line) => line.trim().endsWith('?'))));
+      allQuestions ||
+      (plannerText.includes('?') && containsQuestionKeywords);
 
     if (needsClarification) {
+      recordMetric('/api/chat', Date.now() - startTime, 200);
       return plannerResult.toDataStreamResponse();
     }
 
@@ -68,69 +91,84 @@ export async function POST(req: Request) {
             return;
           }
 
-          const existingProject = await prisma.project.findFirst({
-            where: { name: projectName || 'Untitled Project' },
-          });
+          let savedProjectId: string | null = null;
+          let savedVersion: number | null = null;
 
-          const projectId = existingProject?.id || crypto.randomUUID();
+          await prisma.$transaction(
+            async (tx) => {
+              const existingProject = await tx.project.findFirst({
+                where: { name: projectName.trim() },
+              });
 
-          const project = await prisma.project.upsert({
-            where: { id: projectId },
-            create: {
-              id: projectId,
-              name: projectName || 'Untitled Project',
-              description: messages[0]?.content || '',
+              const projectId = existingProject?.id || crypto.randomUUID();
+
+              const project = await tx.project.upsert({
+                where: { id: projectId },
+                create: {
+                  id: projectId,
+                  name: projectName.trim(),
+                  description: messages[0]?.content || '',
+                },
+                update: { updatedAt: new Date() },
+              });
+
+              const maxVersion = await tx.bRD.aggregate({
+                where: { projectId: project.id },
+                _max: { version: true },
+              });
+
+              const nextVersion = (maxVersion._max.version || 0) + 1;
+
+              await tx.bRD.create({
+                data: {
+                  projectId: project.id,
+                  version: nextVersion,
+                  content: {
+                    raw: text,
+                    generatedAt: new Date().toISOString(),
+                    model: 'gpt-4o',
+                  },
+                  rawInput: messages[messages.length - 1]?.content || '',
+                  status: 'draft',
+                },
+              });
+
+              savedProjectId = project.id;
+              savedVersion = nextVersion;
             },
-            update: { updatedAt: new Date() },
-          });
-
-          const maxVersion = await prisma.bRD.findFirst({
-            where: { projectId: project.id },
-            orderBy: { version: 'desc' },
-            select: { version: true },
-          });
-
-          await prisma.bRD.create({
-            data: {
-              projectId: project.id,
-              version: (maxVersion?.version || 0) + 1,
-              content: {
-                raw: text,
-                generatedAt: new Date().toISOString(),
-                model: 'gpt-4o',
-              },
-              rawInput: messages[messages.length - 1]?.content || '',
-              status: 'draft',
-            },
-          });
-
-          console.log(
-            `✓ BRD saved: Project ${project.id}, Version ${(maxVersion?.version || 0) + 1}`
+            { isolationLevel: 'Serializable' }
           );
+
+          if (savedProjectId && savedVersion) {
+            console.log(`BRD saved: Project ${savedProjectId}, Version ${savedVersion}`);
+          }
         } catch (error) {
           console.error('Database save error:', error);
         }
       },
     });
 
+    recordMetric('/api/chat', Date.now() - startTime, 200);
     return writerResult.toDataStreamResponse();
   } catch (error) {
     console.error('API error:', error);
 
     if (error instanceof Error && error.message.includes('API')) {
+      recordMetric('/api/chat', Date.now() - startTime, 503);
       return new Response(
         JSON.stringify({
           error: 'AI Service Error',
-          message: 'OpenAI API request failed. Check your API key.',
+          message: 'The AI service is unavailable right now. Please try again shortly.',
         }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
+    recordMetric('/api/chat', Date.now() - startTime, 500);
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error',
+        message: 'An unexpected error occurred. Please try again.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
