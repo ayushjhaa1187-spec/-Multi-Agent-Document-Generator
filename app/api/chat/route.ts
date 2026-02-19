@@ -4,6 +4,8 @@ import { prisma } from '@/lib/prisma';
 import { BRD_PLANNER_SYSTEM_PROMPT } from '@/lib/agents/brd-planner';
 import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-writer';
 import { recordMetric } from '@/lib/performance';
+import { analyticsTracker } from '@/lib/analytics';
+import { cacheManager } from '@/lib/cache';
 
 export const maxDuration = 60;
 
@@ -26,7 +28,9 @@ export async function POST(req: Request) {
       );
 
     if (!messagesValid) {
-      recordMetric('/api/chat', Date.now() - startTime, 400);
+      const duration = Date.now() - startTime;
+      recordMetric('/api/chat', duration, 400);
+      analyticsTracker.trackApiRequest('/api/chat', duration, 400, 'Invalid messages format');
       return new Response(
         JSON.stringify({ error: 'Invalid messages format' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -34,7 +38,9 @@ export async function POST(req: Request) {
     }
 
     if (!projectName || typeof projectName !== 'string' || projectName.trim().length === 0) {
-      recordMetric('/api/chat', Date.now() - startTime, 400);
+      const duration = Date.now() - startTime;
+      recordMetric('/api/chat', duration, 400);
+      analyticsTracker.trackApiRequest('/api/chat', duration, 400, 'Invalid project name');
       return new Response(
         JSON.stringify({ error: 'Invalid project name' }),
         { status: 400, headers: { 'Content-Type': 'application/json' } }
@@ -149,12 +155,27 @@ export async function POST(req: Request) {
     });
 
     recordMetric('/api/chat', Date.now() - startTime, 200);
+    analyticsTracker.trackApiRequest('/api/chat', Date.now() - startTime, 200);
+    analyticsTracker.trackUserAction('brd_generation', {
+      projectName,
+      messageCount: messages.length,
+      stage: 'generation',
+    });
     return writerResult.toDataStreamResponse();
   } catch (error) {
+    const duration = Date.now() - startTime;
     console.error('API error:', error);
 
+    if (error instanceof Error) {
+      analyticsTracker.trackError(error, {
+        endpoint: '/api/chat',
+        duration,
+      });
+    }
+
     if (error instanceof Error && error.message.includes('API')) {
-      recordMetric('/api/chat', Date.now() - startTime, 503);
+      recordMetric('/api/chat', duration, 503);
+      analyticsTracker.trackApiRequest('/api/chat', duration, 503, 'AI Service Error');
       return new Response(
         JSON.stringify({
           error: 'AI Service Error',
@@ -164,7 +185,8 @@ export async function POST(req: Request) {
       );
     }
 
-    recordMetric('/api/chat', Date.now() - startTime, 500);
+    recordMetric('/api/chat', duration, 500);
+    analyticsTracker.trackApiRequest('/api/chat', duration, 500, 'Internal server error');
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
