@@ -47,17 +47,6 @@ export async function POST(req: Request) {
       );
     }
 
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      recordMetric('/api/chat', Date.now() - startTime, 503);
-      return new Response(
-        JSON.stringify({ error: 'Database connection failed' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
     // Run planner to decide flow; keep prompt identical
     const plannerResult = await streamText({
       model: openai('gpt-4o'),
@@ -102,16 +91,11 @@ export async function POST(req: Request) {
 
           await prisma.$transaction(
             async (tx) => {
-              const existingProject = await tx.project.findFirst({
-                where: { name: projectName.trim() },
-              });
-
-              const projectId = existingProject?.id || crypto.randomUUID();
-
+              // Optimize: upsert directly by unique name to avoid extra read and handle concurrency
               const project = await tx.project.upsert({
-                where: { id: projectId },
+                where: { name: projectName.trim() },
                 create: {
-                  id: projectId,
+                  id: crypto.randomUUID(),
                   name: projectName.trim(),
                   description: messages[0]?.content || '',
                 },
