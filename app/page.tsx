@@ -96,13 +96,25 @@ export default function BRDGenerator() {
                   onChange={(e) => setProjectNameInput(e.target.value)}
                   placeholder="Enter your project name (e.g., E-Commerce Platform)..."
                   minLength={3}
+                  maxLength={100}
                   aria-required="true"
+                  aria-describedby="project-name-helper project-name-counter"
                   className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   autoFocus
                 />
-                <p className="text-gray-400 text-xs sm:text-sm mt-2">
-                  Give your project a clear, descriptive name (max 100 characters)
-                </p>
+                <div className="flex justify-between items-center mt-2">
+                  <p id="project-name-helper" className="text-gray-400 text-xs sm:text-sm">
+                    Give your project a clear, descriptive name
+                  </p>
+                  <span
+                    id="project-name-counter"
+                    className={`text-xs sm:text-sm font-medium transition-colors duration-200 ${
+                      projectNameInput.length >= 90 ? 'text-orange-400' : 'text-gray-500'
+                    }`}
+                  >
+                    {projectNameInput.length}/100
+                  </span>
+                </div>
               </div>
 
               <button
