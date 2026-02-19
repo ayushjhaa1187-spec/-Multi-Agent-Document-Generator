@@ -42,6 +42,7 @@ lerna-debug.log*
 # OS
 .DS_Store
 Thumbs.db
+nul
 
 # Prisma
 prisma/.env
@@ -66,3 +67,16 @@ turbo.json
 # Local env file
 .env.local
 .env*.local
+
+# Temporary files and cache
+tmpclaude-*
+.cache/
+*.tmp
+tmp/
+
+# Generated files
+test_import.ts
+COMPLETE_SOURCE_CODE.md
+COPY_THESE_FILES.md
+PROJECT_VALIDATION.md
+

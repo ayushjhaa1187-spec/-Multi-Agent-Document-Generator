@@ -211,7 +211,7 @@ Response:
 
 ## Deployment
 
-For detailed deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)
+For detailed deployment instructions, see [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 ### Quick Start
 1. Push to main branch
