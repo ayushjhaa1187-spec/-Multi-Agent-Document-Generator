@@ -9,7 +9,7 @@ export default function BRDGenerator() {
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, stop } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
     api: '/api/chat',
     body: {
       projectName,
@@ -51,6 +51,11 @@ export default function BRDGenerator() {
       return;
     }
 
+    if (trimmedName.length < 3) {
+      setError('Project name must be at least 3 characters.');
+      return;
+    }
+
     if (trimmedName.length > 100) {
       setError('Project name must be 100 characters or less.');
       return;
@@ -80,7 +85,7 @@ export default function BRDGenerator() {
         {/* Project Name Input Form */}
         {!projectName && (
           <div className="mb-8">
-            <form onSubmit={handleProjectNameSubmit} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+            <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
                 <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
@@ -89,8 +94,9 @@ export default function BRDGenerator() {
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleProjectNameSubmit(e as any)}
                   placeholder="Enter your project name (e.g., E-Commerce Platform)..."
+                  minLength={3}
+                  aria-required="true"
                   className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   autoFocus
                 />
@@ -101,7 +107,9 @@ export default function BRDGenerator() {
 
               <button
                 type="submit"
-                className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
+                disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
+                aria-disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
+                className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed disabled:opacity-60 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
               >
                 Continue to Project Details →
               </button>
@@ -111,7 +119,7 @@ export default function BRDGenerator() {
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
             <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
               {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
             </p>
@@ -133,6 +141,9 @@ export default function BRDGenerator() {
                 onClick={() => {
                   setProjectName('');
                   setProjectNameInput('');
+                  setStage('clarify');
+                  setMessages([]);
+                  stop();
                 }}
                 className="text-gray-400 hover:text-white text-sm transition-colors"
               >
@@ -140,10 +151,10 @@ export default function BRDGenerator() {
               </button>
             </div>
 
-            <div className="bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 mb-6 shadow-2xl min-h-[400px] sm:min-h-[500px] max-h-[600px] overflow-y-auto">
+            <div className="chat-container glass-card p-6 sm:p-8 mb-6 shadow-2xl min-h-[400px] sm:min-h-[500px] max-h-[600px] overflow-y-auto">
               {messages.length === 0 && !isLoading && (
                 <div className="text-center text-gray-400 py-12 sm:py-20">
-                  <p className="text-lg sm:text-xl mb-2">🎯 Describe Your Project Requirements</p>
+                  <p className="text-lg sm:text-xl mb-2 float">🎯 Describe Your Project Requirements</p>
                   <p className="text-sm sm:text-base">Get started by sharing what you want to build. Our AI will ask clarifying questions.</p>
                 </div>
               )}
@@ -154,8 +165,8 @@ export default function BRDGenerator() {
                     key={message.id}
                     className={`p-4 sm:p-5 rounded-xl fade-in ${
                       message.role === 'user'
-                        ? 'bg-purple-600/30 border border-purple-400/30 ml-0 sm:ml-8 text-white'
-                        : 'bg-blue-600/20 border border-blue-400/30 mr-0 sm:mr-8 text-gray-100'
+                        ? 'message-user ml-0 sm:ml-8 text-white'
+                        : 'message-assistant mr-0 sm:mr-8 text-gray-100'
                     }`}
                   >
                     <div className="font-semibold text-xs sm:text-sm mb-2 text-gray-300">
@@ -183,7 +194,7 @@ export default function BRDGenerator() {
             </div>
 
             {/* Input Form */}
-            <form onSubmit={handleSubmit} className="bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+            <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
                 <input
                   type="text"
