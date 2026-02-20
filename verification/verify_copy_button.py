@@ -26,7 +26,7 @@ def run():
 
         try:
             print("Navigating to home page...")
-            page.goto("http://localhost:3000")
+            page.goto("http://127.0.0.1:3001")
 
             # Enter project name
             print("Entering project name...")
@@ -39,7 +39,7 @@ def run():
 
             # Send a message to get a response
             print("Sending message...")
-            page.fill("input[placeholder*='Describe your requirements']", "I need a simple to-do list app.")
+            page.fill("textarea[placeholder*='Describe your requirements']", "I need a simple to-do list app.")
             page.click("button:has-text('Send')")
 
             # Wait for AI response
