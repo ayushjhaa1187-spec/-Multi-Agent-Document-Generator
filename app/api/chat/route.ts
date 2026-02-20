@@ -160,7 +160,7 @@ export async function POST(req: Request) {
     recordMetric('/api/chat', Date.now() - startTime, 200);
     analyticsTracker.trackApiRequest('/api/chat', Date.now() - startTime, 200);
     analyticsTracker.trackUserAction('brd_generation', {
-      projectName,
+      // Sentinel: projectName removed to prevent PII leakage in analytics
       messageCount: messages.length,
       stage: 'generation',
     });

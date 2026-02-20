@@ -44,12 +44,24 @@ class AnalyticsTracker {
     properties?: Record<string, any>,
     userId?: string
   ): void {
+    // Sentinel: Sanitize properties to remove PII and sensitive data
+    const safeProperties = properties ? { ...properties } : undefined;
+    const sensitiveKeys = ['projectName', 'password', 'token', 'key', 'secret'];
+
+    if (safeProperties) {
+      for (const key of sensitiveKeys) {
+        if (key in safeProperties) {
+          delete safeProperties[key];
+        }
+      }
+    }
+
     const analyticsEvent: AnalyticsEvent = {
       event,
       timestamp: new Date(),
       userId,
       sessionId: this.sessionId,
-      properties,
+      properties: safeProperties,
     };
 
     this.events.push(analyticsEvent);
@@ -65,7 +77,7 @@ class AnalyticsTracker {
     }
     this.totalRequests++;
 
-    console.log(`[Analytics] Event tracked: ${event}`, properties);
+    console.log(`[Analytics] Event tracked: ${event}`, analyticsEvent.properties);
   }
 
   /**
@@ -110,9 +122,15 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Sentinel: Log stack trace for server-side debugging, but do not store it
+    if (error instanceof Error && error.stack) {
+      console.error(error.stack);
+    }
+
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
+      // stack removed to prevent information leakage via API
       ...context,
     });
   }
