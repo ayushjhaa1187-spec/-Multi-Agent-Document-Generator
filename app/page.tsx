@@ -3,6 +3,35 @@
 import { useChat } from 'ai/react';
 import { useState, useEffect } from 'react';
 
+function CopyButton({ content }: { content: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all"
+      aria-label={copied ? "Copied" : "Copy to clipboard"}
+      title={copied ? "Copied!" : "Copy content"}
+    >
+      {copied ? (
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-400"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      ) : (
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+      )}
+    </button>
+  );
+}
+
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
   const [projectNameInput, setProjectNameInput] = useState('');
@@ -181,8 +210,13 @@ export default function BRDGenerator() {
                         : 'message-assistant mr-0 sm:mr-8 text-gray-100'
                     }`}
                   >
-                    <div className="font-semibold text-xs sm:text-sm mb-2 text-gray-300">
-                      {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="font-semibold text-xs sm:text-sm text-gray-300">
+                        {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
+                      </div>
+                      {message.role !== 'user' && (
+                        <CopyButton content={message.content} />
+                      )}
                     </div>
                     <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
                       {message.content}
