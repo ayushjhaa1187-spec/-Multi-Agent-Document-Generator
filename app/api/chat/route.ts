@@ -14,17 +14,20 @@ export async function POST(req: Request) {
   try {
     const { messages, projectName } = await req.json();
 
-    // Validate messages array shape
+    // Validate messages array shape (Security Enhancement: Input Validation)
     const messagesValid =
       Array.isArray(messages) &&
       messages.length > 0 &&
+      messages.length <= 50 && // Limit message count
       messages.every(
         (m) =>
           m &&
           typeof m === 'object' &&
           typeof m.role === 'string' &&
+          ['user', 'assistant', 'system'].includes(m.role) && // Validate role
           typeof m.content === 'string' &&
-          m.content.trim().length > 0
+          m.content.trim().length > 0 &&
+          m.content.length <= 5000 // Limit content length
       );
 
     if (!messagesValid) {
@@ -37,7 +40,12 @@ export async function POST(req: Request) {
       );
     }
 
-    if (!projectName || typeof projectName !== 'string' || projectName.trim().length === 0) {
+    if (
+      !projectName ||
+      typeof projectName !== 'string' ||
+      projectName.trim().length === 0 ||
+      projectName.length > 100 // Limit project name length
+    ) {
       const duration = Date.now() - startTime;
       recordMetric('/api/chat', duration, 400);
       analyticsTracker.trackApiRequest('/api/chat', duration, 400, 'Invalid project name');
@@ -102,16 +110,11 @@ export async function POST(req: Request) {
 
           await prisma.$transaction(
             async (tx) => {
-              const existingProject = await tx.project.findFirst({
-                where: { name: projectName.trim() },
-              });
-
-              const projectId = existingProject?.id || crypto.randomUUID();
-
+              // Fix Race Condition: Use atomic upsert on unique name field
               const project = await tx.project.upsert({
-                where: { id: projectId },
+                where: { name: projectName.trim() },
                 create: {
-                  id: projectId,
+                  id: crypto.randomUUID(),
                   name: projectName.trim(),
                   description: messages[0]?.content || '',
                 },
