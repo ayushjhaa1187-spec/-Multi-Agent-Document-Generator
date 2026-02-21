@@ -1,5 +1,6 @@
 import { describe, it, mock, before, beforeEach } from 'node:test';
 import assert from 'node:assert';
+import { POST as PostType } from './route';
 
 // Mock State
 const mockState = {
@@ -7,10 +8,26 @@ const mockState = {
   writerResponse: "Generated BRD Content",
 };
 
+// Define types for Prisma mocks
+type MockFn = ReturnType<typeof mock.fn>;
+
+interface MockPrisma {
+  $queryRaw: MockFn;
+  $transaction: MockFn;
+  project: {
+    upsert: MockFn;
+    findFirst: MockFn;
+  };
+  bRD: {
+    aggregate: MockFn;
+    create: MockFn;
+  };
+}
+
 // Mock Prisma
-const mockPrisma = {
+const mockPrisma: MockPrisma = {
   $queryRaw: mock.fn(async () => []),
-  $transaction: mock.fn(async (callback) => {
+  $transaction: mock.fn(async (callback: (tx: any) => Promise<any>) => {
     return callback(mockPrisma);
   }),
   project: {
@@ -30,7 +47,7 @@ mock.module('@/lib/prisma', {
   },
 });
 
-const mockStreamText = mock.fn(async (options) => {
+const mockStreamText = mock.fn(async (options: any) => {
   // Planner Agent Mock
   if (options.system && options.system.includes('BRD Planner Agent')) {
     return {
@@ -70,7 +87,7 @@ mock.module('@ai-sdk/openai', {
 });
 
 describe('POST /api/chat', async () => {
-  let POST;
+  let POST: typeof PostType;
 
   before(async () => {
     // Dynamically import the route handler after mocks are set up
@@ -96,7 +113,7 @@ describe('POST /api/chat', async () => {
     });
     const res = await POST(req);
     assert.strictEqual(res.status, 400);
-    const data = await res.json();
+    const data = await res.json() as { error: string };
     assert.strictEqual(data.error, 'Invalid messages format');
   });
 
@@ -107,7 +124,7 @@ describe('POST /api/chat', async () => {
     });
     const res = await POST(req);
     assert.strictEqual(res.status, 400);
-    const data = await res.json();
+    const data = await res.json() as { error: string };
     assert.strictEqual(data.error, 'Invalid messages format');
   });
 
@@ -118,7 +135,7 @@ describe('POST /api/chat', async () => {
     });
     const res = await POST(req);
     assert.strictEqual(res.status, 400);
-    const data = await res.json();
+    const data = await res.json() as { error: string };
     assert.strictEqual(data.error, 'Invalid messages format');
   });
 
@@ -131,7 +148,7 @@ describe('POST /api/chat', async () => {
     });
     const res = await POST(req);
     assert.strictEqual(res.status, 400);
-    const data = await res.json();
+    const data = await res.json() as { error: string };
     assert.strictEqual(data.error, 'Invalid project name');
   });
 
@@ -145,7 +162,7 @@ describe('POST /api/chat', async () => {
     });
     const res = await POST(req);
     assert.strictEqual(res.status, 400);
-    const data = await res.json();
+    const data = await res.json() as { error: string };
     assert.strictEqual(data.error, 'Invalid project name');
   });
 
@@ -159,7 +176,7 @@ describe('POST /api/chat', async () => {
     });
     const res = await POST(req);
     assert.strictEqual(res.status, 400);
-    const data = await res.json();
+    const data = await res.json() as { error: string };
     assert.strictEqual(data.error, 'Invalid messages format');
   });
 
@@ -179,14 +196,14 @@ describe('POST /api/chat', async () => {
     assert.strictEqual(mockPrisma.$transaction.mock.callCount(), 1);
 
     assert.strictEqual(mockPrisma.project.upsert.mock.callCount(), 1);
-    const upsertCall = mockPrisma.project.upsert.mock.calls[0];
-    assert.strictEqual(upsertCall.arguments[0].where.name, 'CRM Project');
+    const upsertCall = mockPrisma.project.upsert.mock.calls[0] as { arguments: any[] };
+    assert.strictEqual(upsertCall?.arguments[0]?.where?.name, 'CRM Project');
 
     assert.strictEqual(mockPrisma.bRD.create.mock.callCount(), 1);
-    const createCall = mockPrisma.bRD.create.mock.calls[0];
-    assert.strictEqual(createCall.arguments[0].data.projectId, 'proj-123');
-    assert.strictEqual(createCall.arguments[0].data.content.raw, 'Generated BRD Content');
-    assert.strictEqual(createCall.arguments[0].data.status, 'draft');
+    const createCall = mockPrisma.bRD.create.mock.calls[0] as { arguments: any[] };
+    assert.strictEqual(createCall?.arguments[0]?.data?.projectId, 'proj-123');
+    assert.strictEqual(createCall?.arguments[0]?.data?.content?.raw, 'Generated BRD Content');
+    assert.strictEqual(createCall?.arguments[0]?.data?.status, 'draft');
   });
 
   it('should not save BRD if writer text is empty', async () => {
