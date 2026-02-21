@@ -6,11 +6,25 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { rateLimiter } from '@/lib/rate-limit';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const startTime = Date.now();
+
+  // Security Enhancement: Rate Limiting
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
+  if (!rateLimiter.check(ip)) {
+    const duration = Date.now() - startTime;
+    recordMetric('/api/chat', duration, 429);
+    analyticsTracker.trackApiRequest('/api/chat', duration, 429, 'Rate limit exceeded');
+    return new Response(
+      JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+      { status: 429, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
   try {
     const { messages, projectName } = await req.json();
 
