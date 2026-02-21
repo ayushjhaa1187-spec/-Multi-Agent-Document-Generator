@@ -6,6 +6,7 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { saveBRD } from '@/lib/services/project';
 
 export const maxDuration = 60;
 
@@ -99,61 +100,7 @@ export async function POST(req: Request) {
         { role: 'assistant', content: plannerText },
       ],
       onFinish: async ({ text }) => {
-        try {
-          if (!text || text.trim().length === 0) {
-            console.warn('Empty text received from AI model');
-            return;
-          }
-
-          let savedProjectId: string | null = null;
-          let savedVersion: number | null = null;
-
-          await prisma.$transaction(
-            async (tx) => {
-              // Fix Race Condition: Use atomic upsert on unique name field
-              const project = await tx.project.upsert({
-                where: { name: projectName.trim() },
-                create: {
-                  id: crypto.randomUUID(),
-                  name: projectName.trim(),
-                  description: messages[0]?.content || '',
-                },
-                update: { updatedAt: new Date() },
-              });
-
-              const maxVersion = await tx.bRD.aggregate({
-                where: { projectId: project.id },
-                _max: { version: true },
-              });
-
-              const nextVersion = (maxVersion._max.version || 0) + 1;
-
-              await tx.bRD.create({
-                data: {
-                  projectId: project.id,
-                  version: nextVersion,
-                  content: {
-                    raw: text,
-                    generatedAt: new Date().toISOString(),
-                    model: 'gpt-4o',
-                  },
-                  rawInput: messages[messages.length - 1]?.content || '',
-                  status: 'draft',
-                },
-              });
-
-              savedProjectId = project.id;
-              savedVersion = nextVersion;
-            },
-            { isolationLevel: 'Serializable' }
-          );
-
-          if (savedProjectId && savedVersion) {
-            console.log(`BRD saved: Project ${savedProjectId}, Version ${savedVersion}`);
-          }
-        } catch (error) {
-          console.error('Database save error:', error);
-        }
+        await saveBRD(text, projectName, messages);
       },
     });
 
