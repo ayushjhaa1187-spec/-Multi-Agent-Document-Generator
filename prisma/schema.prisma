@@ -7,42 +7,119 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  oauthProvider String?
+  createdAt     DateTime  @default(now())
+  projects      Project[]
+}
+
 model Project {
-  id String @id @default(cuid())
-  name String @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  ownerId     String?
+  owner       User?    @relation(fields: [ownerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   
-  documents BRD[] @relation("ProjectBRDs")
+  brds        BRD[]
+  documents   Document[]
+  jobQueues   JobQueue[]
   
-  @@index([createdAt])
+  conversations AIConversation[]
 }
 
 model BRD {
-  id String @id @default(cuid())
-  projectId String
-  project Project @relation("ProjectBRDs", fields: [projectId], references: [id], onDelete: Cascade)
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title         String?
+  status        String   @default("draft")
+  contentJson   Json?
+  accuracyScore Float?
+  latencyMs     Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   
-  version Int @default(1)
-  content Json?
-  rawInput String
-  generatedBy String @default("gpt-4o")
-  status String @default("draft")
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@unique([projectId, version])
+  validations   Validation[]
+
+  // Legacy/Compatibility fields
+  version       Int      @default(1)
+  rawInput      String?
+  generatedBy   String   @default("gpt-4o")
+
   @@index([projectId])
-  @@index([status])
-  @@index([createdAt])
 }
 
+model Document {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type          String   // email, transcript, chat
+  rawContent    String
+  relevanceScore Float?
+  isRelevant    Boolean  @default(true)
+  metadataJson  Json?
+  createdAt     DateTime @default(now())
+  
+  entities      Entity[]
+
+  @@index([projectId])
+}
+
+model Entity {
+  id          String   @id @default(cuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  type        String   // person, decision, date
+  value       String
+  confidence  Float?
+  sourceRef   String?
+  createdAt   DateTime @default(now())
+
+  @@index([documentId])
+}
+
+model Validation {
+  id             String   @id @default(cuid())
+  brdId          String
+  brd            BRD      @relation(fields: [brdId], references: [id], onDelete: Cascade)
+  accuracy       Float?
+  precision      Float?
+  recall         Float?
+  f1Score        Float?
+  groundTruthRef String?
+  createdAt      DateTime @default(now())
+
+  @@index([brdId])
+}
+
+model JobQueue {
+  id           String    @id @default(cuid())
+  projectId    String
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  status       String    // pending, processing, completed, failed
+  currentPhase String?
+  progressPct  Int       @default(0)
+  errorLog     String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  
+  @@index([projectId])
+}
+
+// Existing models kept for compatibility
+
 model AIConversation {
-  id String @id @default(cuid())
-  projectId String
-  messages Message[]
+  id        String   @id @default(cuid())
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+  messages  Message[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -52,13 +129,13 @@ model AIConversation {
 }
 
 model Message {
-  id String @id @default(cuid())
+  id             String         @id @default(cuid())
   conversationId String
-  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   
-  role String
-  content String
-  stage String?
+  role      String
+  content   String
+  stage     String?
   
   createdAt DateTime @default(now())
   
