@@ -6,6 +6,7 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { randomUUID } from 'node:crypto';
 
 export const maxDuration = 60;
 
@@ -131,7 +132,7 @@ export async function handleChat(req: Request, deps: ChatDependencies = defaultD
               const project = await tx.project.upsert({
                 where: { name: projectName.trim() },
                 create: {
-                  id: crypto.randomUUID(),
+                  id: randomUUID(),
                   name: projectName.trim(),
                   description: messages[0]?.content || '',
                 },
