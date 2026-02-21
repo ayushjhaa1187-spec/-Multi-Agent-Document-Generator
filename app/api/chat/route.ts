@@ -6,10 +6,28 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { randomUUID } from 'node:crypto';
 
 export const maxDuration = 60;
 
-export async function POST(req: Request) {
+export interface ChatDependencies {
+  prisma: typeof prisma;
+  streamText: typeof streamText;
+  openai: typeof openai;
+  recordMetric: typeof recordMetric;
+  analyticsTracker: typeof analyticsTracker;
+}
+
+const defaultDependencies: ChatDependencies = {
+  prisma,
+  streamText,
+  openai,
+  recordMetric,
+  analyticsTracker,
+};
+
+export async function handleChat(req: Request, deps: ChatDependencies = defaultDependencies) {
+  const { prisma, streamText, openai, recordMetric, analyticsTracker } = deps;
   const startTime = Date.now();
   try {
     const { messages, projectName } = await req.json();
@@ -20,7 +38,7 @@ export async function POST(req: Request) {
       messages.length > 0 &&
       messages.length <= 50 && // Limit message count
       messages.every(
-        (m) =>
+        (m: any) =>
           m &&
           typeof m === 'object' &&
           typeof m.role === 'string' &&
@@ -114,7 +132,7 @@ export async function POST(req: Request) {
               const project = await tx.project.upsert({
                 where: { name: projectName.trim() },
                 create: {
-                  id: crypto.randomUUID(),
+                  id: randomUUID(),
                   name: projectName.trim(),
                   description: messages[0]?.content || '',
                 },
@@ -198,4 +216,8 @@ export async function POST(req: Request) {
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
+}
+
+export async function POST(req: Request) {
+  return handleChat(req);
 }
