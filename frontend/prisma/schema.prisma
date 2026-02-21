@@ -25,11 +25,11 @@ model Project {
   owner       User?    @relation(fields: [ownerId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   brds        BRD[]
   documents   Document[]
   jobQueues   JobQueue[]
-  
+
   conversations AIConversation[]
 }
 
@@ -44,7 +44,7 @@ model BRD {
   latencyMs     Int?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  
+
   validations   Validation[]
 
   // Legacy/Compatibility fields
@@ -65,7 +65,7 @@ model Document {
   isRelevant    Boolean  @default(true)
   metadataJson  Json?
   createdAt     DateTime @default(now())
-  
+
   entities      Entity[]
 
   @@index([projectId])
@@ -109,7 +109,7 @@ model JobQueue {
   startedAt    DateTime?
   completedAt  DateTime?
   createdAt    DateTime  @default(now())
-  
+
   @@index([projectId])
 }
 
@@ -120,10 +120,10 @@ model AIConversation {
   projectId String?
   project   Project? @relation(fields: [projectId], references: [id])
   messages  Message[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([projectId])
   @@index([createdAt])
 }
@@ -132,13 +132,13 @@ model Message {
   id             String         @id @default(cuid())
   conversationId String
   conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  
+
   role      String
   content   String
   stage     String?
-  
+
   createdAt DateTime @default(now())
-  
+
   @@index([conversationId])
   @@index([role])
   @@index([createdAt])
