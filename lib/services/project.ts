@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { randomUUID } from 'node:crypto';
 
 interface Message {
   role: string;
@@ -25,7 +26,7 @@ export async function saveBRD(
         const project = await tx.project.upsert({
           where: { name: projectName.trim() },
           create: {
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             name: projectName.trim(),
             description: messages[0]?.content || '',
           },
