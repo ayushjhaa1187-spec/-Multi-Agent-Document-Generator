@@ -132,7 +132,7 @@ export async function POST(req: Request) {
                 data: {
                   projectId: project.id,
                   version: nextVersion,
-                  content: {
+                  contentJson: {
                     raw: text,
                     generatedAt: new Date().toISOString(),
                     model: 'gpt-4o',
