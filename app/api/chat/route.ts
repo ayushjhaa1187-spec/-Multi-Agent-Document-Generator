@@ -9,7 +9,24 @@ import { cacheManager } from '@/lib/cache';
 
 export const maxDuration = 60;
 
-export async function POST(req: Request) {
+export interface ChatDependencies {
+  prisma: typeof prisma;
+  streamText: typeof streamText;
+  openai: typeof openai;
+  recordMetric: typeof recordMetric;
+  analyticsTracker: typeof analyticsTracker;
+}
+
+const defaultDependencies: ChatDependencies = {
+  prisma,
+  streamText,
+  openai,
+  recordMetric,
+  analyticsTracker,
+};
+
+export async function handleChat(req: Request, deps: ChatDependencies = defaultDependencies) {
+  const { prisma, streamText, openai, recordMetric, analyticsTracker } = deps;
   const startTime = Date.now();
   try {
     const { messages, projectName } = await req.json();
@@ -20,7 +37,7 @@ export async function POST(req: Request) {
       messages.length > 0 &&
       messages.length <= 50 && // Limit message count
       messages.every(
-        (m) =>
+        (m: any) =>
           m &&
           typeof m === 'object' &&
           typeof m.role === 'string' &&
@@ -198,4 +215,8 @@ export async function POST(req: Request) {
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
+}
+
+export async function POST(req: Request) {
+  return handleChat(req);
 }
