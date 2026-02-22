@@ -62,4 +62,30 @@ describe('POST /api/chat - Security Validation', () => {
     const data = await res.json();
     assert.strictEqual(data.error, 'Invalid messages format');
   });
+
+  it('should return 429 if rate limit is exceeded', async () => {
+    const ip = '1.2.3.4';
+    const reqOptions = {
+      method: 'POST',
+      headers: { 'x-forwarded-for': ip },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: 'Test' }],
+        projectName: 'Test Project',
+      }),
+    };
+
+    // Make 10 requests (limit)
+    for (let i = 0; i < 10; i++) {
+      const req = new Request('http://localhost/api/chat', reqOptions);
+      const res = await POST(req);
+      assert.notStrictEqual(res.status, 429, `Request ${i + 1} should not be 429`);
+    }
+
+    // 11th request should fail
+    const req = new Request('http://localhost/api/chat', reqOptions);
+    const res = await POST(req);
+    assert.strictEqual(res.status, 429);
+    const data = await res.json();
+    assert.strictEqual(data.error, 'Too many requests');
+  });
 });
