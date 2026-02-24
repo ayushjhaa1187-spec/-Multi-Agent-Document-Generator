@@ -17,10 +17,73 @@ interface AnalyticsMetrics {
   errorRate: number;
 }
 
-class AnalyticsTracker {
-  private events: AnalyticsEvent[] = [];
-  private sessionId: string;
+/**
+ * A simple circular buffer for efficient O(1) push operations
+ */
+class CircularBuffer<T> {
+  private buffer: (T | undefined)[];
+  private nextIndex = 0;
+  private isFull = false;
+  private readonly size: number;
+
+  constructor(size: number) {
+    this.size = size;
+    this.buffer = new Array(size);
+  }
+
+  push(item: T) {
+    this.buffer[this.nextIndex] = item;
+    this.nextIndex = (this.nextIndex + 1) % this.size;
+    if (this.nextIndex === 0) {
+      this.isFull = true;
+    }
+  }
+
+  get length(): number {
+    return this.isFull ? this.size : this.nextIndex;
+  }
+
+  at(index: number): T | undefined {
+    const len = this.length;
+    if (len === 0) return undefined;
+
+    // Handle negative indices
+    let actualIndex = index < 0 ? len + index : index;
+
+    if (actualIndex < 0 || actualIndex >= len) return undefined;
+
+    if (this.isFull) {
+      actualIndex = (this.nextIndex + actualIndex) % this.size;
+    }
+
+    return this.buffer[actualIndex];
+  }
+
+  slice(limit: number): T[] {
+    const len = this.length;
+    const actualLimit = limit < 0 ? Math.min(-limit, len) : Math.min(limit, len);
+    const result: T[] = [];
+
+    // For slice(-limit), we want the last 'limit' elements
+    const start = len - actualLimit;
+    for (let i = start; i < len; i++) {
+      result.push(this.at(i)!);
+    }
+    return result;
+  }
+
+  *[Symbol.iterator](): IterableIterator<T> {
+    const len = this.length;
+    for (let i = 0; i < len; i++) {
+      yield this.at(i)!;
+    }
+  }
+}
+
+export class AnalyticsTracker {
   private readonly MAX_EVENTS = 1000;
+  private events = new CircularBuffer<AnalyticsEvent>(this.MAX_EVENTS);
+  private sessionId: string;
   private errorCount = 0;
   private totalRequests = 0;
 
@@ -53,11 +116,6 @@ class AnalyticsTracker {
     };
 
     this.events.push(analyticsEvent);
-
-    // Keep only last 1000 events in memory
-    if (this.events.length > this.MAX_EVENTS) {
-      this.events.shift();
-    }
 
     // Log significant events
     if (event === 'error' || event === 'api_error') {
@@ -149,8 +207,8 @@ class AnalyticsTracker {
   getSessionInfo() {
     return {
       sessionId: this.sessionId,
-      startTime: this.events[0]?.timestamp,
-      endTime: this.events[this.events.length - 1]?.timestamp,
+      startTime: this.events.at(0)?.timestamp,
+      endTime: this.events.at(-1)?.timestamp,
       totalEvents: this.events.length,
       metrics: this.getMetrics(),
     };
@@ -182,8 +240,8 @@ class AnalyticsTracker {
   private getDuration(): number {
     if (this.events.length < 2) return 0;
 
-    const start = this.events[0].timestamp;
-    const end = this.events[this.events.length - 1].timestamp;
+    const start = this.events.at(0)!.timestamp;
+    const end = this.events.at(-1)!.timestamp;
 
     return end.getTime() - start.getTime();
   }
