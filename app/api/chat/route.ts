@@ -6,6 +6,7 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { MAX_MESSAGES, MAX_CONTENT_LENGTH, MAX_PROJECT_NAME_LENGTH } from '@/lib/constants';
 
 export const maxDuration = 60;
 
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
     const messagesValid =
       Array.isArray(messages) &&
       messages.length > 0 &&
-      messages.length <= 50 && // Limit message count
+      messages.length <= MAX_MESSAGES && // Limit message count
       messages.every(
         (m) =>
           m &&
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
           ['user', 'assistant', 'system'].includes(m.role) && // Validate role
           typeof m.content === 'string' &&
           m.content.trim().length > 0 &&
-          m.content.length <= 5000 // Limit content length
+          m.content.length <= MAX_CONTENT_LENGTH // Limit content length
       );
 
     if (!messagesValid) {
@@ -44,7 +45,7 @@ export async function POST(req: Request) {
       !projectName ||
       typeof projectName !== 'string' ||
       projectName.trim().length === 0 ||
-      projectName.length > 100 // Limit project name length
+      projectName.length > MAX_PROJECT_NAME_LENGTH // Limit project name length
     ) {
       const duration = Date.now() - startTime;
       recordMetric('/api/chat', duration, 400);

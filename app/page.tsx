@@ -2,6 +2,7 @@
 
 import { useChat } from 'ai/react';
 import { useState, useEffect } from 'react';
+import { MAX_PROJECT_NAME_LENGTH, MIN_PROJECT_NAME_LENGTH } from '@/lib/constants';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -80,13 +81,13 @@ export default function BRDGenerator() {
       return;
     }
 
-    if (trimmedName.length < 3) {
-      setError('Project name must be at least 3 characters.');
+    if (trimmedName.length < MIN_PROJECT_NAME_LENGTH) {
+      setError(`Project name must be at least ${MIN_PROJECT_NAME_LENGTH} characters.`);
       return;
     }
 
-    if (trimmedName.length > 100) {
-      setError('Project name must be 100 characters or less.');
+    if (trimmedName.length > MAX_PROJECT_NAME_LENGTH) {
+      setError(`Project name must be ${MAX_PROJECT_NAME_LENGTH} characters or less.`);
       return;
     }
 
@@ -124,8 +125,8 @@ export default function BRDGenerator() {
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
                   placeholder="Enter your project name (e.g., E-Commerce Platform)..."
-                  minLength={3}
-                  maxLength={100}
+                  minLength={MIN_PROJECT_NAME_LENGTH}
+                  maxLength={MAX_PROJECT_NAME_LENGTH}
                   aria-required="true"
                   aria-describedby="project-name-helper project-name-counter"
                   className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
@@ -138,18 +139,18 @@ export default function BRDGenerator() {
                   <span
                     id="project-name-counter"
                     className={`text-xs sm:text-sm font-medium transition-colors duration-200 ${
-                      projectNameInput.length >= 90 ? 'text-orange-400' : 'text-gray-500'
+                      projectNameInput.length >= (MAX_PROJECT_NAME_LENGTH * 0.9) ? 'text-orange-400' : 'text-gray-500'
                     }`}
                   >
-                    {projectNameInput.length}/100
+                    {projectNameInput.length}/{MAX_PROJECT_NAME_LENGTH}
                   </span>
                 </div>
               </div>
 
               <button
                 type="submit"
-                disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
-                aria-disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
+                disabled={projectNameInput.trim().length < MIN_PROJECT_NAME_LENGTH || projectNameInput.trim().length > MAX_PROJECT_NAME_LENGTH}
+                aria-disabled={projectNameInput.trim().length < MIN_PROJECT_NAME_LENGTH || projectNameInput.trim().length > MAX_PROJECT_NAME_LENGTH}
                 className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed disabled:opacity-60 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
               >
                 Continue to Project Details →
