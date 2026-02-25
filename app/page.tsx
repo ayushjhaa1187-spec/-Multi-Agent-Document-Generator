@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -64,6 +64,12 @@ export default function BRDGenerator() {
       }
     },
   });
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (isLoading) {
@@ -236,6 +242,7 @@ export default function BRDGenerator() {
                     </button>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
@@ -249,6 +256,8 @@ export default function BRDGenerator() {
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
+                  autoFocus
+                  aria-label="Chat input"
                 />
                 <button
                   type="submit"
