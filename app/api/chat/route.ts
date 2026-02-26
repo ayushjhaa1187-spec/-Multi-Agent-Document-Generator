@@ -6,12 +6,31 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { rateLimiter } from '@/lib/rate-limit';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const startTime = Date.now();
   try {
+    // Security Enhancement: Rate Limiting
+    // Limit to 10 requests per minute per IP
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
+    const isAllowed = rateLimiter.check(ip, 10, 60000);
+
+    if (!isAllowed) {
+      const duration = Date.now() - startTime;
+      recordMetric('/api/chat', duration, 429);
+      analyticsTracker.trackApiRequest('/api/chat', duration, 429, 'Rate limit exceeded');
+      return new Response(
+        JSON.stringify({
+          error: 'Too Many Requests',
+          message: 'You are sending requests too quickly. Please try again in a minute.',
+        }),
+        { status: 429, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { messages, projectName } = await req.json();
 
     // Validate messages array shape (Security Enhancement: Input Validation)
