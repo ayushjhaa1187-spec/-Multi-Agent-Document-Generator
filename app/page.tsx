@@ -241,14 +241,23 @@ export default function BRDGenerator() {
 
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
-              <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+              <div className="flex gap-2 sm:gap-4 mb-4 items-end">
+                <textarea
                   value={input}
                   onChange={handleInputChange}
-                  placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (!isLoading && input.trim()) {
+                        handleSubmit(e as any);
+                      }
+                    }
+                  }}
+                  placeholder={stage === 'clarify' ? 'Describe your requirements in detail... (Shift+Enter for new line)' : 'Provide additional implementation details... (Shift+Enter for new line)'}
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none min-h-[52px] max-h-[200px]"
                   disabled={isLoading}
+                  rows={1}
+                  aria-label="Chat input message"
                 />
                 <button
                   type="submit"
