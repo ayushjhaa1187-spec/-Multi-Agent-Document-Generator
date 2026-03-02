@@ -12,7 +12,7 @@ function CopyButton({ content }: { content: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error('Failed to copy:', err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -51,7 +51,7 @@ export default function BRDGenerator() {
       }
     },
     onError: (error) => {
-      console.error('Chat error:', error);
+      console.error('Chat error:', error instanceof Error ? error.message : String(error));
       const errorMsg = error?.message || 'Failed to get response from API';
 
       // Provide user-friendly error messages
