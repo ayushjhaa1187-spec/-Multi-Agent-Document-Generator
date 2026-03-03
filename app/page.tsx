@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -37,6 +37,7 @@ export default function BRDGenerator() {
   const [projectNameInput, setProjectNameInput] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
     api: '/api/chat',
@@ -64,6 +65,10 @@ export default function BRDGenerator() {
       }
     },
   });
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   useEffect(() => {
     if (isLoading) {
@@ -116,11 +121,12 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="projectName" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
                   type="text"
+                  id="projectName"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
                   placeholder="Enter your project name (e.g., E-Commerce Platform)..."
@@ -160,7 +166,7 @@ export default function BRDGenerator() {
 
         {/* Error Display */}
         {error && (
-          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in" aria-live="polite">
             <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
               {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
             </p>
@@ -236,24 +242,35 @@ export default function BRDGenerator() {
                     </button>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
-              <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+              <div className="flex gap-2 sm:gap-4 mb-4 items-end">
+                <textarea
                   value={input}
                   onChange={handleInputChange}
-                  placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (!isLoading && input.trim()) {
+                        handleSubmit(e as any);
+                      }
+                    }
+                  }}
+                  placeholder={stage === 'clarify' ? 'Describe your requirements in detail...\n(Press Enter to send, Shift+Enter for new line)' : 'Provide additional implementation details...\n(Press Enter to send, Shift+Enter for new line)'}
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none overflow-y-auto"
                   disabled={isLoading}
+                  rows={Math.min(5, input.split('\n').length || 1)}
+                  aria-label="Chat input"
+                  style={{ minHeight: '52px', maxHeight: '150px' }}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
+                  className="px-6 sm:px-8 py-3 sm:py-4 h-[52px] bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base flex items-center justify-center whitespace-nowrap"
                 >
                   {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
                 </button>
