@@ -1,0 +1,3 @@
+## 2024-05-28 - Database Health Checks Block TTFB
+**Learning:** Adding explicit synchronous database health checks (like `SELECT 1`) at the beginning of API routes that stream AI responses unnecessarily blocks the main thread and delays Time To First Byte (TTFB). Since database interactions (like saving the generated document) in the Vercel AI SDK are often deferred to asynchronous `onFinish` callbacks, initial database availability isn't strictly required to begin streaming the AI response to the user.
+**Action:** Remove synchronous database connection checks from streaming API routes. Allow the stream to start immediately and handle any potential database failures asynchronously during the save phase.
