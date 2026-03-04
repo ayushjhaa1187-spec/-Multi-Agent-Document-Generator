@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     try {
       await prisma.$queryRaw`SELECT 1`;
     } catch (dbError) {
-      console.error('Database connection failed:', dbError);
+      console.error('Database connection failed:', dbError instanceof Error ? dbError.message : String(dbError));
       recordMetric('/api/chat', Date.now() - startTime, 503);
       return new Response(
         JSON.stringify({ error: 'Database connection failed' }),
@@ -152,7 +152,7 @@ export async function POST(req: Request) {
             console.log(`BRD saved: Project ${savedProjectId}, Version ${savedVersion}`);
           }
         } catch (error) {
-          console.error('Database save error:', error);
+          console.error('Database save error:', error instanceof Error ? error.message : String(error));
         }
       },
     });
@@ -167,7 +167,7 @@ export async function POST(req: Request) {
     return writerResult.toDataStreamResponse();
   } catch (error) {
     const duration = Date.now() - startTime;
-    console.error('API error:', error);
+    console.error('API error:', error instanceof Error ? error.message : String(error));
 
     if (error instanceof Error) {
       analyticsTracker.trackError(error, {
