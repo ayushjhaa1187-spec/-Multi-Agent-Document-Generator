@@ -1,0 +1,3 @@
+## 2024-05-18 - Remove synchronous DB health checks in API Routes
+**Learning:** Checking database health synchronously (e.g., `SELECT 1`) at the start of an API route needlessly delays response time, particularly when database access is actually only needed asynchronously later (such as in an `onFinish` stream handler). This adds a roundtrip penalty to initial latency.
+**Action:** Always defer database connectivity requirements to the moment data actually needs to be persisted or read asynchronously, rather than making it a blocking check at the entry of the request.
