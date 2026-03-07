@@ -1,0 +1,4 @@
+## 2024-05-14 - Prevent Sensitive Error Information Exposure
+**Vulnerability:** Full error objects and stack traces were logged via `console.error` in API routes and client-side code, and stored in the `AnalyticsTracker` memory (`events`). This data could be exposed to the unauthenticated `/api/analytics` endpoint and server logs.
+**Learning:** Even internal logging mechanisms and analytics trackers can become vectors for sensitive information disclosure if errors are not sanitized before storage or logging.
+**Prevention:** Always sanitize error objects before logging or tracking them. Log `error.message` instead of the full `Error` object, and strip out the `.stack` property unless securely logged in an isolated environment.
