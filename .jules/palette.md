@@ -1,0 +1,3 @@
+## 2024-03-08 - Multiline Chat Input UX Pattern
+**Learning:** AI chat interfaces require multiline support for comprehensive prompts, but replacing an `<input>` with a `<textarea>` breaks the intuitive "Enter to submit" behavior while introducing IME compatibility issues.
+**Action:** Always implement AI chat inputs as auto-resizing `<textarea>` elements with manual 'Enter' key submission that checks `!e.nativeEvent.isComposing` to support IMEs, preserves 'Shift+Enter' for newlines, and programmatically resets height upon form submission. Additionally, ensure static message components like `CopyButton` inside `messages.map` are wrapped in `React.memo()` to prevent unnecessary re-renders during message streaming.
