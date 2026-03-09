@@ -1,0 +1,3 @@
+## 2024-05-24 - AI Stream Chat Performance Bottleneck
+**Learning:** In streaming chat interfaces using `ai/react` (`useChat`), every single streamed token causes the entire `messages` array state to update, triggering a re-render of the entire chat list. Unmemoized, pure components inside this list (like a generic `CopyButton`) will re-render unnecessarily on every single token chunk, leading to an O(N) rendering bottleneck where N is the number of messages.
+**Action:** Always wrap static or pure list item components inside `messages.map` with `React.memo()` to prevent unnecessary re-renders during active message streaming and typing.
