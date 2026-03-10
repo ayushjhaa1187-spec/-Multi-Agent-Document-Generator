@@ -55,16 +55,10 @@ export async function POST(req: Request) {
       );
     }
 
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      recordMetric('/api/chat', Date.now() - startTime, 503);
-      return new Response(
-        JSON.stringify({ error: 'Database connection failed' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // ⚡ Bolt Optimization: Removed synchronous `await prisma.$queryRaw\`SELECT 1\`;` health check.
+    // Doing a DB health check on every request blocks the main thread and delays Time To First Byte (TTFB).
+    // Database saves are handled asynchronously in the `onFinish` callback, so failing fast here is unnecessary.
+    // Impact: Reduces TTFB latency by removing a blocking network round-trip to the database before streaming starts.
 
     // Run planner to decide flow; keep prompt identical
     const plannerResult = await streamText({
