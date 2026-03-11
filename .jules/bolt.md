@@ -1,0 +1,3 @@
+## 2024-05-15 - Explicit DB Health Checks Delay TTFB
+**Learning:** Explicit database health checks (e.g., `SELECT 1`) at the start of streaming AI routes are an anti-pattern. They needlessly block the time-to-first-byte (TTFB) and degrade perceived performance.
+**Action:** Always defer database interactions (like saving chat history) to the `onFinish` asynchronous callback of the stream instead of validating the DB connection upfront.
