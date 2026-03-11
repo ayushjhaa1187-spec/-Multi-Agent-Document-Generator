@@ -1,0 +1,4 @@
+## 2026-03-11 - Prevent Stack Trace Leakage via Public Analytics APIs
+**Vulnerability:** The `AnalyticsTracker` class in `lib/analytics.ts` captured and stored full stack traces for errors in memory. Because the `app/api/analytics/route.ts` endpoint exposes these recent events publicly via an unauthenticated GET request, sensitive internal system information (stack traces) could be leaked.
+**Learning:** In-memory caching and logging structures that are exposed publicly must be sanitized. It is critical to separate the internal need for detailed debugging (which can be logged via `console.error`) from the data stored in structures exposed to external endpoints.
+**Prevention:** Sanitize error events by omitting sensitive properties like `stack` before storing them in memory or any other publicly accessible structure. Continue to log the full error objects internally using `console.error` to preserve observability.

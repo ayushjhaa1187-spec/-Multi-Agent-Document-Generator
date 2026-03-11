@@ -110,9 +110,13 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Log full error with stack trace internally for observability
+    console.error('[Analytics] Error tracked:', error);
+
+    // Sanitize event by omitting stack trace to prevent leakage via metrics APIs
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
