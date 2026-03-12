@@ -1,0 +1,3 @@
+## 2024-10-24 - Defer DB Checks for Faster Streaming
+**Learning:** Explicit database connectivity checks (like `SELECT 1`) at the start of API routes are an anti-pattern when using streaming AI responses, as they needlessly delay Time to First Byte (TTFB).
+**Action:** Defer database interactions (like upserts or saves) to asynchronous callbacks like `onFinish` to allow the AI stream to begin immediately.
