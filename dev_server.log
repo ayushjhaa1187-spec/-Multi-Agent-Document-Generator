@@ -1,5 +1,5 @@
 
-> multi-agent-brd-generator@1.0.0 dev
+> multi-agent-brd-generator@1.0.0 dev /app
 > next dev
 
    ▲ Next.js 15.5.12
@@ -10,8 +10,217 @@
 
  ✓ Starting...
    Using tsconfig file: ./tsconfig.json
- ✓ Ready in 2.1s
+ ✓ Ready in 1977ms
  ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Compiled / in 6.5s (746 modules)
+ GET / 200 in 7144ms
+ ○ Compiling /api/chat ...
+ ✓ Compiled /api/chat in 1383ms (799 modules)
+[Analytics] Session started: session_1773516424524_ppwgg29u2
+[Analytics] Event tracked: session_start { userAgent: 'Node.js/22' }
+API error: Error [AI_APICallError]: Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.
+    at async POST (app/api/chat/route.ts:63:27)
+  61 |
+  62 |     // Run planner to decide flow; keep prompt identical
+> 63 |     const plannerResult = await streamText({
+     |                           ^
+  64 |       model: openai('gpt-4o'),
+  65 |       system: BRD_PLANNER_SYSTEM_PROMPT,
+  66 |       messages, {
+  cause: undefined,
+  url: 'https://api.openai.com/v1/chat/completions',
+  requestBodyValues: [Object],
+  statusCode: 401,
+  responseHeaders: [Object],
+  responseBody: '{\n' +
+    '    "error": {\n' +
+    '        "message": "Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.",\n' +
+    '        "type": "invalid_request_error",\n' +
+    '        "param": null,\n' +
+    '        "code": "invalid_api_key"\n' +
+    '    }\n' +
+    '}\n',
+  isRetryable: false,
+  data: [Object]
+}
+[Analytics] Event tracked: error {
+  error: 'Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.',
+  stack: 'AI_APICallError: Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.\n' +
+    '    at eval (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+provider-utils@1.0.18_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs:463:14)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+    '    at async postToApi (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+provider-utils@1.0.18_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs:370:28)\n' +
+    '    at async OpenAIChatLanguageModel.doStream (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+openai@0.0.58_zod@3.25.76/node_modules/@ai-sdk/openai/dist/index.mjs:403:50)\n' +
+    '    at async fn (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4197:23)\n' +
+    '    at async eval (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:336:22)\n' +
+    '    at async _retryWithExponentialBackoff (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:164:12)\n' +
+    '    at async startStep (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4152:13)\n' +
+    '    at async fn (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4231:11)\n' +
+    '    at async eval (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:336:22)\n' +
+    '    at async POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:65:31)\n' +
+    '    at async AppRouteRouteModule.do (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:38696)\n' +
+    '    at async AppRouteRouteModule.handle (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:45978)\n' +
+    '    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)\n' +
+    '    at async AppRouteRouteModule.handleResponse (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:1:195179)\n' +
+    '    at async handleResponse (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)\n' +
+    '    at async handler (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)\n' +
+    '    at async DevServer.renderToResponseWithComponentsImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1422:9)\n' +
+    '    at async DevServer.renderPageComponent (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1474:24)\n' +
+    '    at async DevServer.renderToResponseImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1514:32)\n' +
+    '    at async DevServer.pipeImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1025:25)\n' +
+    '    at async NextNodeServer.handleCatchallRenderRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/next-server.js:393:17)\n' +
+    '    at async DevServer.handleRequestImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:916:17)\n' +
+    '    at async /app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/dev/next-dev-server.js:400:20\n' +
+    '    at async Span.traceAsyncFn (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/trace/trace.js:157:20)\n' +
+    '    at async DevServer.handleRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/dev/next-dev-server.js:396:24)\n' +
+    '    at async invokeRender (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:240:21)\n' +
+    '    at async handleRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:437:24)\n' +
+    '    at async requestHandlerImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:485:13)\n' +
+    '    at async Server.requestListener (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/start-server.js:226:13)',
+  endpoint: '/api/chat',
+  duration: 225
+}
+[Analytics] Event tracked: api_request {
+  endpoint: '/api/chat',
+  duration: 225,
+  status: 503,
+  error: 'AI Service Error'
+}
+ POST /api/chat 503 in 2178ms
+ GET / 200 in 384ms
+API error: Error [AI_APICallError]: Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.
+    at async POST (app/api/chat/route.ts:63:27)
+  61 |
+  62 |     // Run planner to decide flow; keep prompt identical
+> 63 |     const plannerResult = await streamText({
+     |                           ^
+  64 |       model: openai('gpt-4o'),
+  65 |       system: BRD_PLANNER_SYSTEM_PROMPT,
+  66 |       messages, {
+  cause: undefined,
+  url: 'https://api.openai.com/v1/chat/completions',
+  requestBodyValues: [Object],
+  statusCode: 401,
+  responseHeaders: [Object],
+  responseBody: '{\n' +
+    '    "error": {\n' +
+    '        "message": "Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.",\n' +
+    '        "type": "invalid_request_error",\n' +
+    '        "param": null,\n' +
+    '        "code": "invalid_api_key"\n' +
+    '    }\n' +
+    '}\n',
+  isRetryable: false,
+  data: [Object]
+}
+[Analytics] Event tracked: error {
+  error: 'Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.',
+  stack: 'AI_APICallError: Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.\n' +
+    '    at eval (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+provider-utils@1.0.18_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs:463:14)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+    '    at async postToApi (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+provider-utils@1.0.18_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs:370:28)\n' +
+    '    at async OpenAIChatLanguageModel.doStream (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+openai@0.0.58_zod@3.25.76/node_modules/@ai-sdk/openai/dist/index.mjs:403:50)\n' +
+    '    at async fn (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4197:23)\n' +
+    '    at async eval (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:336:22)\n' +
+    '    at async _retryWithExponentialBackoff (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:164:12)\n' +
+    '    at async startStep (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4152:13)\n' +
+    '    at async fn (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4231:11)\n' +
+    '    at async eval (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:336:22)\n' +
+    '    at async POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:65:31)\n' +
+    '    at async AppRouteRouteModule.do (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:38696)\n' +
+    '    at async AppRouteRouteModule.handle (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:45978)\n' +
+    '    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)\n' +
+    '    at async AppRouteRouteModule.handleResponse (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:1:195179)\n' +
+    '    at async handleResponse (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)\n' +
+    '    at async handler (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)\n' +
+    '    at async DevServer.renderToResponseWithComponentsImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1422:9)\n' +
+    '    at async DevServer.renderPageComponent (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1474:24)\n' +
+    '    at async DevServer.renderToResponseImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1514:32)\n' +
+    '    at async DevServer.pipeImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1025:25)\n' +
+    '    at async NextNodeServer.handleCatchallRenderRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/next-server.js:393:17)\n' +
+    '    at async DevServer.handleRequestImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:916:17)\n' +
+    '    at async /app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/dev/next-dev-server.js:400:20\n' +
+    '    at async Span.traceAsyncFn (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/trace/trace.js:157:20)\n' +
+    '    at async DevServer.handleRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/dev/next-dev-server.js:396:24)\n' +
+    '    at async invokeRender (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:240:21)\n' +
+    '    at async handleRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:437:24)\n' +
+    '    at async requestHandlerImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:485:13)\n' +
+    '    at async Server.requestListener (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/start-server.js:226:13)',
+  endpoint: '/api/chat',
+  duration: 238
+}
+[Analytics] Event tracked: api_request {
+  endpoint: '/api/chat',
+  duration: 238,
+  status: 503,
+  error: 'AI Service Error'
+}
+ POST /api/chat 503 in 442ms
+ GET / 200 in 73ms
+API error: Error [AI_APICallError]: Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.
+    at async POST (app/api/chat/route.ts:63:27)
+  61 |
+  62 |     // Run planner to decide flow; keep prompt identical
+> 63 |     const plannerResult = await streamText({
+     |                           ^
+  64 |       model: openai('gpt-4o'),
+  65 |       system: BRD_PLANNER_SYSTEM_PROMPT,
+  66 |       messages, {
+  cause: undefined,
+  url: 'https://api.openai.com/v1/chat/completions',
+  requestBodyValues: [Object],
+  statusCode: 401,
+  responseHeaders: [Object],
+  responseBody: '{\n' +
+    '    "error": {\n' +
+    '        "message": "Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.",\n' +
+    '        "type": "invalid_request_error",\n' +
+    '        "param": null,\n' +
+    '        "code": "invalid_api_key"\n' +
+    '    }\n' +
+    '}\n',
+  isRetryable: false,
+  data: [Object]
+}
+[Analytics] Event tracked: error {
+  error: 'Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.',
+  stack: 'AI_APICallError: Incorrect API key provided: test-key. You can find your API key at https://platform.openai.com/account/api-keys.\n' +
+    '    at eval (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+provider-utils@1.0.18_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs:463:14)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)\n' +
+    '    at async postToApi (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+provider-utils@1.0.18_zod@3.25.76/node_modules/@ai-sdk/provider-utils/dist/index.mjs:370:28)\n' +
+    '    at async OpenAIChatLanguageModel.doStream (webpack-internal:///(rsc)/./node_modules/.pnpm/@ai-sdk+openai@0.0.58_zod@3.25.76/node_modules/@ai-sdk/openai/dist/index.mjs:403:50)\n' +
+    '    at async fn (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4197:23)\n' +
+    '    at async eval (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:336:22)\n' +
+    '    at async _retryWithExponentialBackoff (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:164:12)\n' +
+    '    at async startStep (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4152:13)\n' +
+    '    at async fn (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:4231:11)\n' +
+    '    at async eval (webpack-internal:///(rsc)/./node_modules/.pnpm/ai@3.4.33_react@19.2.4_sswr@2.2.0_svelte@5.53.12__svelte@5.53.12_vue@3.5.30_typescript@5.9.3__zod@3.25.76/node_modules/ai/dist/index.mjs:336:22)\n' +
+    '    at async POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:65:31)\n' +
+    '    at async AppRouteRouteModule.do (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:38696)\n' +
+    '    at async AppRouteRouteModule.handle (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:45978)\n' +
+    '    at async responseGenerator (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:203:38)\n' +
+    '    at async AppRouteRouteModule.handleResponse (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:1:195179)\n' +
+    '    at async handleResponse (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:265:32)\n' +
+    '    at async handler (webpack-internal:///(rsc)/./node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/build/webpack/loaders/next-app-loader/index.js?name=app%2Fapi%2Fchat%2Froute&page=%2Fapi%2Fchat%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2Fchat%2Froute.ts&appDir=%2Fapp%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp&isDev=true&tsconfigPath=.%2Ftsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D&isGlobalNotFoundEnabled=!:317:13)\n' +
+    '    at async DevServer.renderToResponseWithComponentsImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1422:9)\n' +
+    '    at async DevServer.renderPageComponent (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1474:24)\n' +
+    '    at async DevServer.renderToResponseImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1514:32)\n' +
+    '    at async DevServer.pipeImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:1025:25)\n' +
+    '    at async NextNodeServer.handleCatchallRenderRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/next-server.js:393:17)\n' +
+    '    at async DevServer.handleRequestImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/base-server.js:916:17)\n' +
+    '    at async /app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/dev/next-dev-server.js:400:20\n' +
+    '    at async Span.traceAsyncFn (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/trace/trace.js:157:20)\n' +
+    '    at async DevServer.handleRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/dev/next-dev-server.js:396:24)\n' +
+    '    at async invokeRender (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:240:21)\n' +
+    '    at async handleRequest (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:437:24)\n' +
+    '    at async requestHandlerImpl (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/router-server.js:485:13)\n' +
+    '    at async Server.requestListener (/app/node_modules/.pnpm/next@15.5.12_@opentelemetry+api@1.9.0_react-dom@19.2.4_react@19.2.4__react@19.2.4/node_modules/next/dist/server/lib/start-server.js:226:13)',
+  endpoint: '/api/chat',
+  duration: 144
+}
+[Analytics] Event tracked: api_request {
+  endpoint: '/api/chat',
+  duration: 144,
+  status: 503,
+  error: 'AI Service Error'
+}
+ POST /api/chat 503 in 358ms

@@ -55,16 +55,9 @@ export async function POST(req: Request) {
       );
     }
 
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      recordMetric('/api/chat', Date.now() - startTime, 503);
-      return new Response(
-        JSON.stringify({ error: 'Database connection failed' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // Removed synchronous database connectivity check (await prisma.$queryRaw\`SELECT 1\`)
+    // to improve Time-To-First-Token (TTFT) during real-time streaming, as database interactions
+    // are deferred to the onFinish callback.
 
     // Run planner to decide flow; keep prompt identical
     const plannerResult = await streamText({
