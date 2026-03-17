@@ -1,82 +1,87 @@
-# Multi-Agent BRD Generator
+# -Multi-Agent-Document-Generator
+> Transforming raw business ideas into structured requirement documents using autonomous agents.
 
-Generate production-ready Business Requirement Documents from raw ideas using a two-agent workflow (Planner + Requirement Writer) with real-time streaming, persistence, and built-in observability.
+![language](https://img.shields.io/badge/language-TypeScript-blue) ![license](https://img.shields.io/badge/license-MIT-green) ![last commit](https://img.shields.io/github/last-commit/ayushjhaa1187-spec/-Multi-Agent-Document-Generator) ![repo size](https://img.shields.io/github/repo-size/ayushjhaa1187-spec/-Multi-Agent-Document-Generator)
 
-## Highlights
-- Dual agents: planner asks clarifying questions; writer drafts full BRDs.
-- Real-time chat UI with streaming responses.
-- PostgreSQL persistence via Prisma; optional Redis cache.
-- Metrics and analytics endpoints for health and usage.
-- Next.js 15 + TypeScript + Tailwind; deploys cleanly to Vercel.
+> *"He(1) stared(2) at(3) the(4) disorganized(5) stack(6) of(7) meeting(8) notes,(9) twenty(10) pages(11) of(12) chaotic(13) scribbles.(14) The(15) project(16) draft(17) was(18) due(19) at(20) midnight.(21) He(22) loaded(23) the(24) agents.(25) One(26) click.(27) One(28) stream.(29) The(30) multi-agent(31) brain(32) synthesized(33) every(34) bullet(35) point(36) into(37) a(38) professional(39) BRD.(40)"*
 
-## Quickstart (local)
-Prereqs: Node 18+, PostgreSQL, optional Redis.
+## WHAT THIS DOES
+The Multi-Agent BRD Generator is a sophisticated orchestration system that solves the "Requirement Gap" problem in software development. It leverages a dual-agent architecture—a Planner Agent to clarify vagueness and a Writer Agent to expand outlines into complete document sections. By using real-time streaming and structured feedback loops, it automates the creation of Executive Summaries, Functional Requirements, and Success Metrics.
+
+## TECH STACK
+| Layer | Technology |
+| :--- | :--- |
+| Frontend | Next.js 15+ (App Router) |
+| AI Orchestration | Vercel AI SDK |
+| Models | OpenAI / Anthropic |
+| ORM | Prisma |
+| Database | PostgreSQL |
+
+## QUICK START
 ```bash
+# 1. Clone
+git clone https://github.com/ayushjhaa1187-spec/-Multi-Agent-Document-Generator
+
+# 2. Install
 npm install
-cp .env.example .env.local   # add your secrets below
-npm run db:push              # create schema
+
+# 3. Setup Database & Run
+npm run db:push
 npm run dev
 ```
-Essential env vars:
-- `OPENAI_API_KEY` (required)
-- `DATABASE_URL` (required, Postgres)
-- `NEXT_PUBLIC_APP_URL` (recommended)
-- `REDIS_URL` (optional, enables external cache)
+Add: "Expected output: Next.js server started and database schema pushed successfully."
 
-## Scripts
-- `npm run dev` – start Next.js dev server
-- `npm run build` / `npm start` – production build & serve
-- `npm run lint` – lint with ESLint
-- `npm test` – API route tests (node --test + tsx)
-- `npm run db:push` – sync Prisma schema
-- `npm run db:migrate` – interactive migration dev
-- `npm run db:studio` – open Prisma Studio
+## FEATURES TABLE
+| Feature | Why it matters |
+| :--- | :--- |
+| Dual-Agent Architecture | Planner Agent clarifies user vagueness while Writer Agent handles expansion. |
+| Intelligent Clarification | Automatically asks 3-5 targeted follow-up questions for underspecified ideas. |
+| Structured Outputs | Generates professional-grade BRDs containingpersonas and success metrics. |
+| DB Persistence | Built-in PostgreSQL integration to manage document versions and drafts. |
+| Real-time Streaming | Watch the agents collaborate and build your document live via WebSockets. |
 
-## API Surface
-- `POST /api/chat` – orchestrates planner + writer; streams BRD text
-- `GET /api/metrics` – response-time + health metrics
-- `GET /api/analytics` – session and event tracking
+## HOW IT WORKS
+```mermaid
+graph TD
+    Input[Raw User Idea] --> Planner[BRD Planner Agent]
+    Planner --> Questions{Vague?}
+    Questions -- Yes --> User((User Clarification))
+    User --> Planner
+    Questions -- No --> Writer[Requirement Writer Agent]
+    Writer --> DB[(PostgreSQL)]
+    Writer --> Output[Final Structured BRD]
+```
+The architecture operates as a two-stage state machine using the Vercel AI SDK. Stage 1 (Clarification) uses the Planner Agent to validate the logical depth of the user's input. If gaps are found, it triggers a dialogue loop to gather more context. Once validated, Stage 2 (Expansion) engages the Writer Agent to transform the validated outline into a formal JSON-mapped document structure.
 
-Request example:
-```json
-{
-  "messages": [{"role": "user", "content": "I want a taxi app"}],
-  "projectName": "Taxi Booking Platform",
-  "stage": "clarify" | "generate"
-}
+## PROJECT STRUCTURE
+```
+-Multi-Agent-Document-Generator/
+├── app/          # Core chat interface and API orchestration routes
+├── lib/agents/   # System prompts and multi-agent brain logic
+├── prisma/       # Database schema and migration management
+├── components/   # Reusable UI components for the document viewer
+└── next.config.js # Framework optimization and environment routing
 ```
 
-## Architecture (high level)
-Frontend (`app/`) → API routes (`app/api/*`) → Agents (`lib/agents/*`) → Data layer (PostgreSQL via Prisma, optional Redis cache) → Observability (`/api/metrics`, `/api/analytics`).
-
-## Data Model (Prisma excerpt)
-```prisma
-model Project { id String @id @default(cuid()); name String; description String?; createdAt DateTime @default(now()); updatedAt DateTime @updatedAt; documents BRD[] }
-model BRD { id String @id @default(cuid()); projectId String; project Project @relation(fields: [projectId], references: [id]); version Int @default(1); content Json; rawInput String; generatedBy String @default("gpt-4o"); status String @default("draft"); createdAt DateTime @default(now()) }
-```
-
-## Project Layout
-```
-app/            # Next.js pages, layout, and chat UI
-app/api/        # chat, metrics, analytics routes
-lib/            # prisma client, cache, analytics, agents
-prisma/         # schema.prisma
-public/         # static assets
-docs/           # extended guides (getting started, api, architecture, deployment, testing)
-```
-
-## Testing
+## CONFIGURATION
 ```bash
-npm test
+# .env.local
+OPENAI_API_KEY=sk-your_key_here
+DATABASE_URL="postgresql://user:pass@localhost:5432/brd_gen"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-## Deployment (Vercel)
-1) Set env vars in Vercel dashboard. 2) `npm run build` locally to verify. 3) Push to `main`; Vercel auto-deploys. 4) Run `npm run db:migrate` against the production database.
+## ROADMAP
+| Feature | Status | Priority |
+| :--- | :--- | :--- |
+| Multi-Agent Core | ✅ Done | High |
+| PDF Export | 🔧 In Progress | Medium |
+| JIRA Integration | 📋 Planned | Low |
 
-## Roadmap (short)
-- BRD reviewer/validator agent
-- Export to PDF/Word
-- JIRA/Azure DevOps integration
+## CONTRIBUTING
+We are looking for help with the automated reviewer agent logic.
+1. Fork → 2. Branch (`git checkout -b feat/your-improvement`) → 3. PR → 4. Review
 
-## Support & License
-MIT License. For help, open a GitHub issue.
+## LICENSE + FOOTER
+License: MIT
+Built by ayushjhaa1187-spec · Give it a ⭐ if it helped you
