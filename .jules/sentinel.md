@@ -1,0 +1,4 @@
+## 2024-05-14 - Prevent public exposure of error stack traces via API
+**Vulnerability:** The `AnalyticsTracker` stored full error stack traces in-memory via `trackError`, which were exposed publicly without authentication via the `GET /api/analytics` endpoint.
+**Learning:** In-memory analytics structures and event arrays that are exposed via API endpoints must have sensitive information (like stack traces) explicitly sanitized before storage. Internal debug context must be kept to server-side logs.
+**Prevention:** Sanitize sensitive data before adding it to in-memory event tracking arrays, and ensure robust server-side logging (`console.error`) preserves debug observability internally instead of exposing it to client-facing metrics endpoints.
