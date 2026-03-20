@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -33,6 +33,9 @@ function CopyButton({ content }: { content: string }) {
 }
 
 export default function BRDGenerator() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const [projectName, setProjectName] = useState('');
   const [projectNameInput, setProjectNameInput] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
@@ -240,20 +243,45 @@ export default function BRDGenerator() {
             </div>
 
             {/* Input Form */}
-            <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
-              <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+            <form
+              ref={formRef}
+              onSubmit={(e) => {
+                handleSubmit(e);
+                setTimeout(() => {
+                  if (textareaRef.current) {
+                    textareaRef.current.style.height = 'auto';
+                  }
+                }, 0);
+              }}
+              className="glass-card p-6 sm:p-8 shadow-2xl"
+            >
+              <div className="flex gap-2 sm:gap-4 mb-4 items-end">
+                <textarea
+                  ref={textareaRef}
                   value={input}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    handleInputChange(e);
+                    e.target.style.height = 'auto';
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                      e.preventDefault();
+                      if (!isLoading && input.trim()) {
+                        formRef.current?.requestSubmit();
+                      }
+                    }
+                  }}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none overflow-y-auto max-h-[200px]"
                   disabled={isLoading}
+                  rows={1}
+                  aria-label="Chat input"
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base shrink-0"
                 >
                   {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
                 </button>
