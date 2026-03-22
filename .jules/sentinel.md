@@ -1,0 +1,4 @@
+## 2025-02-17 - Information Exposure in In-Memory Cache via Unauthenticated Endpoints
+**Vulnerability:** The application stored error stack traces in an in-memory cache (`AnalyticsTracker`) that was exposed to the public internet via the unauthenticated `GET /api/analytics` endpoint. This allowed anyone to retrieve sensitive server internals.
+**Learning:** In-memory caching and logging structures used to aggregate events and errors can inadvertently become a vector for information disclosure when coupled with metrics APIs or other unauthenticated endpoints.
+**Prevention:** In-memory caching and logging structures must be explicitly sanitized to remove sensitive data like stack traces before storage if they might be exposed publicly. Preserve full error observability solely through internal server-side logs.
