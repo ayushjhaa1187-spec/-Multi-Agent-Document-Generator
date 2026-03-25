@@ -38,32 +38,6 @@ export default function BRDGenerator() {
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    handleInputChange(e as any);
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
-      e.preventDefault();
-      if (!isLoading && input.trim()) {
-        const fakeEvent = new Event('submit', { cancelable: true, bubbles: true }) as any;
-        handleSubmit(fakeEvent);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (input === '' && textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
-  }, [input]);
-
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
     api: '/api/chat',
     body: {
@@ -90,6 +64,32 @@ export default function BRDGenerator() {
       }
     },
   });
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    handleInputChange(e as any);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      if (!isLoading && input.trim()) {
+        const fakeEvent = new Event('submit', { cancelable: true, bubbles: true }) as any;
+        handleSubmit(fakeEvent);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (input === '' && textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
+  }, [input]);
 
   useEffect(() => {
     if (isLoading) {
