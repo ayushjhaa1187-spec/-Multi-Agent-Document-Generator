@@ -1,0 +1,4 @@
+## 2024-03-27 - Information Exposure in Public Analytics Endpoint
+**Vulnerability:** The unauthenticated GET `/api/analytics` endpoint exposed internal server stack traces by returning the `analyticsTracker` events array. This array stored `error.stack` inside `trackError`, which leaked implementation details, potentially aiding targeted attacks.
+**Learning:** In-memory caching, logging, and metrics structures (like the events array in `AnalyticsTracker`) often become public over time or are inadvertently exposed via metrics/health APIs. Even if the data isn't directly pushed to a public DB, it must still be sanitized.
+**Prevention:** Sanitize error objects explicitly before placing them into any centralized in-memory tracking or logging structures (e.g., event queues, metrics arrays) that might be exposed. Retain full error objects and stack traces only in strict server-side logs (`console.error`).
