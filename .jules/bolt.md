@@ -1,0 +1,3 @@
+## 2024-03-27 - Optimizing TTFT by deferring database checks
+**Learning:** In streaming applications (like those using AI SDK), synchronous health checks (e.g., `SELECT 1` in Prisma) before initiating the stream significantly hurt Time-To-First-Token (TTFT). Because the database save operation is naturally deferred to the `onFinish` callback of the stream, there's no need to synchronously verify connectivity before streaming begins.
+**Action:** When implementing streaming endpoints, audit the critical path for synchronous external calls (like DB checks or non-essential API requests) and defer them to post-streaming callbacks (like `onFinish`) to minimize TTFT and improve perceived performance.
