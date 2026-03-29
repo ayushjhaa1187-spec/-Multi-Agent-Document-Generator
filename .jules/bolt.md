@@ -1,0 +1,3 @@
+## 2026-03-29 - Removed Synchronous Database Health Check
+**Learning:** In the AI streaming architecture, synchronous database health checks (like `SELECT 1`) before starting the stream act as a hard block, significantly worsening Time-To-First-Token (TTFT). Because this application uses the AI SDK's `onFinish` callback to defer database interaction (saving the BRD) to *after* the stream completes, early health checks are unnecessary and anti-pattern.
+**Action:** Always defer non-critical operations (like database interactions) to the `onFinish` callback or execute them asynchronously alongside the stream to ensure minimal TTFT.
