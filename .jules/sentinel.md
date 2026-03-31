@@ -1,0 +1,4 @@
+## 2026-03-31 - Exposed Stack Traces via Public Analytics API
+**Vulnerability:** In-memory analytics events expose sensitive error stack traces publicly through the unauthenticated `app/api/analytics/route.ts` endpoint, as `AnalyticsTracker.trackError` was directly injecting `error.stack` into tracked events without sanitization.
+**Learning:** In-memory data structures (like arrays storing recent analytics events) can become security risks if exposed publicly via metrics APIs, requiring the same sanitization rigor as persistent storage.
+**Prevention:** Always sanitize in-memory caching and logging structures to remove sensitive information like stack traces before storage, while retaining them in secure server-side logs for debugging.
