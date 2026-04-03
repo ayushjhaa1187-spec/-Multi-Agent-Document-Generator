@@ -1,0 +1,5 @@
+## 2024-05-18 - Prevent Stack Trace Exposure in Analytics
+
+**Vulnerability:** The analytics tracking utility (`lib/analytics.ts`) was storing error stack traces in memory and those events were exposed via an unauthenticated, public API endpoint (`GET /api/analytics`). This exposes internal application structure and dependency details to anyone hitting the endpoint.
+**Learning:** In-memory caching and logging structures (like the events array in `AnalyticsTracker`) must be scrutinized as if they are public. The architectural gap here is exposing an internal logging/tracking mechanism directly via an unauthenticated route without an explicit serialization/sanitization boundary.
+**Prevention:** Always sanitize sensitive information (e.g., stack traces) before putting it into structures that may be returned by APIs, or ensure that such endpoints are strictly authenticated and authorized. Maintain observability by relying on server-side logs (`console.error`) rather than storing debug info in client-facing state.
