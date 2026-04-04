@@ -1,18 +1,32 @@
-# Multi-Agent-Document-Generator
-**Tagline:** Distributed multi-agent system for automated synthesis of high-fidelity documentation.
+# Multi-Agent Document Generator
 
-![build status](https://img.shields.io/badge/build-passing-brightgreen) ![license](https://img.shields.io/badge/license-MIT-blue) ![language](https://img.shields.io/badge/language-Python-blue)
+> Orchestrated AI agent system that collaboratively generates comprehensive technical documentation from codebases.
 
-# 1. PROJECT BANNER
-- Project name: Multi-Agent-Document-Generator
-- Tagline: Distributed multi-agent system for automated synthesis of high-fidelity documentation.
-- Badges: build status · license · version · language · stars
+![build](https://img.shields.io/badge/build-passing-brightgreen) ![license](https://img.shields.io/badge/license-MIT-blue) ![stack](https://img.shields.io/badge/stack-TypeScript%20%7C%20LangGraph-blueviolet)
 
-# 2. THE STORY (40-word short story — REQUIRED)
-> *"The project was massive; the docs were zero. Writing it would take months. He launched the Generator. Three agents. One goal. One drafted, one reviewed, and one polished. By morning, a full documentation suite was ready. Complexity simplified. Finally."*
+## 📖 The Story
+> *"The codebase had grown to 200 files with zero documentation. Writing it manually would take weeks. He deployed the Generator. Multiple AI agents swarmed through the modules — one mapped the API, another wrote tutorials, a third drafted architecture diagrams. In minutes, a complete docs site materialized."*
 
-# 3. WHAT THIS DOES
-Orchestrates multiple AI agents to collaboratively write technical documentation. It breaks down large codebases into modules, with specialized agents handling different layers (API specs, tutorials, and architectural overviews).
+## ✨ Features
+| Feature | Description |
+| :--- | :--- |
+| **Multi-Agent Orchestration** | Specialized agents handle API docs, tutorials, and architecture overviews |
+| **Codebase Analysis** | Automatically parses file structures, function signatures, and dependencies |
+| **Parallel Processing** | Multiple agents work simultaneously on different documentation layers |
+| **Template System** | Customizable output templates for different documentation standards |
 
-# 4. TECH STACK
-- Python, LangGraph, OpenAI Swarm.
+## 🛠 Tech Stack
+- **Runtime**: TypeScript / Node.js
+- **AI Framework**: LangGraph, OpenAI Swarm
+- **LLM**: GPT-4o / Claude
+
+## 🚀 Quick Start
+```bash
+git clone https://github.com/ayushjhaa1187-spec/-Multi-Agent-Document-Generator.git
+cd -Multi-Agent-Document-Generator
+npm install
+npm run dev
+```
+
+## 📄 License
+MIT — Built by **ayushjhaa1187-spec**
