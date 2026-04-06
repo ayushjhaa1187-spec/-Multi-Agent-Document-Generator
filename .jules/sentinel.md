@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevented Stack Trace Leakage in Public Analytics API
+**Vulnerability:** The in-memory analytics event array stored raw error objects, including full stack traces. These events were then directly exposed via the unauthenticated `GET /api/analytics` endpoint, leaking sensitive internal server architecture and logic details.
+**Learning:** In-memory caching and logging structures that are exposed to clients or external monitoring APIs must be explicitly sanitized. While internal `console.error` logging should retain full stack traces for observability, public-facing data stores cannot implicitly trust error objects.
+**Prevention:** Always strip sensitive information like `stack` traces from error events before pushing them into shared, publicly accessible event arrays or state structures.

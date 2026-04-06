@@ -110,9 +110,9 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // 🛡️ Sentinel: Removed stack trace from in-memory events to prevent sensitive data leakage via public analytics APIs
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
