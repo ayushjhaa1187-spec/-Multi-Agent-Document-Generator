@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -37,6 +37,7 @@ export default function BRDGenerator() {
   const [projectNameInput, setProjectNameInput] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
     api: '/api/chat',
@@ -70,6 +71,24 @@ export default function BRDGenerator() {
       setError(null);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      // Store current scrollTop to prevent scroll-jumping
+      const currentScroll = textareaRef.current.scrollTop;
+
+      // Reset height to auto to get the correct scrollHeight
+      textareaRef.current.style.height = 'auto';
+
+      // Set the new height based on scrollHeight, capped at roughly 5 lines (120px)
+      // Adding 2px to account for border width
+      const newHeight = Math.min(textareaRef.current.scrollHeight + 2, 120);
+      textareaRef.current.style.height = `${newHeight}px`;
+
+      // Restore scrollTop
+      textareaRef.current.scrollTop = currentScroll;
+    }
+  }, [input]);
 
   const handleProjectNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,13 +261,23 @@ export default function BRDGenerator() {
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+                <textarea
+                  ref={textareaRef}
                   value={input}
                   onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                      e.preventDefault();
+                      if (!isLoading && input.trim()) {
+                        e.currentTarget.form?.requestSubmit();
+                      }
+                    }
+                  }}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none overflow-y-auto"
                   disabled={isLoading}
+                  rows={1}
+                  aria-label="Chat input"
                 />
                 <button
                   type="submit"
