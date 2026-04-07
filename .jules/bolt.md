@@ -1,0 +1,3 @@
+## 2025-01-20 - Memoizing static list items in streaming chat
+**Learning:** In React chat interfaces using the AI SDK (`useChat`), the rapid state updates during message streaming cause all list items in the message map to re-render constantly. This becomes a noticeable performance bottleneck for static sub-components within those list items, such as `CopyButton`, especially as the conversation grows.
+**Action:** Always wrap static or pure list item components inside `messages.map` (e.g., `CopyButton`) with `React.memo()` to prevent unnecessary re-renders during typing and message streaming.
