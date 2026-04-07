@@ -1,9 +1,10 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 
-function CopyButton({ content }: { content: string }) {
+// ⚡ Bolt Optimization: Memoized CopyButton to prevent unnecessary re-renders of older messages during rapid state updates from AI message streaming.
+const CopyButton = memo(function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -30,7 +31,7 @@ function CopyButton({ content }: { content: string }) {
       )}
     </button>
   );
-}
+});
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
