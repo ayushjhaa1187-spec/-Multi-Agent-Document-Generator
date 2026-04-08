@@ -1,0 +1,3 @@
+## 2024-05-15 - Memoize list items powered by useChat to prevent re-renders
+**Learning:** Components rendered inside `messages.map` using the AI SDK's `useChat` are prone to excessive re-rendering as the message stream updates or when the user types. The AI stream constantly updates the messages array. Static or pure components like a `CopyButton` that only depend on text content will cause severe performance degradation if not memoized.
+**Action:** Always wrap static/pure item components inside chat message lists (`messages.map`) with `React.memo()` to prevent unnecessary React re-renders during message streaming.
