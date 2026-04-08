@@ -112,7 +112,7 @@ class AnalyticsTracker {
     const errorMessage = error instanceof Error ? error.message : String(error);
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
+      // Security fix: Do not log or leak stack traces to prevent sensitive information exposure
       ...context,
     });
   }
