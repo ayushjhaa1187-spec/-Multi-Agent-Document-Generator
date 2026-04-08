@@ -1,0 +1,3 @@
+## 2024-05-24 - React Component Re-renders During AI Streaming
+**Learning:** In AI chat interfaces using `useChat`, the `messages` array updates on every incoming text chunk during streaming. This causes the parent component to re-render rapidly. Any un-memoized child components rendered within the message list (like `CopyButton`) will also unnecessarily re-render on every chunk, creating a significant performance bottleneck.
+**Action:** Always wrap static or pure UI components inside `messages.map` loops with `React.memo()` in AI chat applications to prevent cascading re-renders during text streaming.
