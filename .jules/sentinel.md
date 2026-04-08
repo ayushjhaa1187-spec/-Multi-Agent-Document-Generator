@@ -1,0 +1,4 @@
+## 2024-05-24 - Exposed Stack Traces via Metrics API
+**Vulnerability:** The in-memory logging utility (`lib/analytics.ts`) recorded full stack traces for application errors in its `AnalyticsTracker.trackError` method. Because these events are stored in-memory and subsequently exposed without authentication via the `/api/analytics` endpoint, any errors generated during usage could leak sensitive internal implementation details (stack traces) to the public internet.
+**Learning:** Utilities that aggregate logs for public-facing metrics or unauthenticated endpoints must thoroughly sanitize data to remove any internals. Local logs can and should retain full fidelity (`console.error`) for debugging, but shared event pools must act defensively.
+**Prevention:** Always differentiate between internal logging streams and external metrics streams. Ensure payload sanitization is performed on any error event before appending it to in-memory buffers exposed via metrics APIs.
