@@ -1,0 +1,4 @@
+## 2026-03-07 - Analytics Endpoint Stack Trace Leak
+**Vulnerability:** The `trackError` method in `lib/analytics.ts` was storing full error stack traces in the `AnalyticsTracker` in-memory events array. These events are publicly accessible via the `/api/analytics` endpoint, which could expose sensitive server internals, file paths, and codebase structure to malicious users.
+**Learning:** Internal server errors or tracking mechanisms must not leak raw stack traces into arrays or data stores that are directly returned via public APIs. Internal server logs (e.g., `console.error`) should still retain stack traces for debugging.
+**Prevention:** When building custom analytics or tracking tools, explicitly sanitize properties (like stack traces) from errors before storing them if the data will be accessible by client APIs.
