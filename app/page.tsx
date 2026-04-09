@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -65,6 +65,12 @@ export default function BRDGenerator() {
     },
   });
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
   useEffect(() => {
     if (isLoading) {
       setError(null);
@@ -116,10 +122,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="project-name-input" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="project-name-input"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -236,6 +243,7 @@ export default function BRDGenerator() {
                     </button>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
@@ -247,6 +255,7 @@ export default function BRDGenerator() {
                   value={input}
                   onChange={handleInputChange}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
+                  aria-label="Chat message input"
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
                 />

@@ -10,8 +10,8 @@
 
  ✓ Starting...
    Using tsconfig file: ./tsconfig.json
- ✓ Ready in 2.1s
+ ✓ Ready in 1956ms
  ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Compiled / in 7.2s (752 modules)
+ GET / 200 in 9091ms
+ GET / 200 in 111ms
