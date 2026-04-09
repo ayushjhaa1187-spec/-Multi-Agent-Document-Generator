@@ -1,0 +1,4 @@
+## 2025-01-20 - Prevent stack trace exposure in public analytics APIs
+**Vulnerability:** The internal `analyticsTracker` service was storing full JavaScript error objects (including potentially sensitive stack traces) in an in-memory array (`this.events`). This array was directly exposed without sanitization via the public, unauthenticated `GET /api/analytics` endpoint.
+**Learning:** In-memory caching and logging structures that are eventually surfaced via APIs (especially unauthenticated ones) must have their payloads sanitized of internal data. Full stack traces should be retained via standard server logs (`console.error`) rather than stored in structured analytic events.
+**Prevention:** Always sanitize error objects before adding them to stateful arrays/stores that are accessible to clients. Explicitly separate server-side observability (logging) from client-side analytics tracking.
