@@ -1,0 +1,4 @@
+## 2024-03-15 - Information Disclosure in Analytics API
+**Vulnerability:** The public `/api/analytics` endpoint exposed internal error stack traces because they were stored in the `AnalyticsTracker`'s in-memory array.
+**Learning:** Any data tracked by `AnalyticsTracker` is exposed via an unauthenticated GET endpoint (`app/api/analytics/route.ts`). Storing sensitive data like stack traces in the tracker leads to information disclosure.
+**Prevention:** Always sanitize errors and never store stack traces or sensitive context in the in-memory analytics store. Maintain stack traces in server logs instead.
