@@ -1,0 +1,44 @@
+
+> multi-agent-brd-generator@1.0.0 start /app
+> next start
+
+   ▲ Next.js 15.5.14
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.2:3000
+
+ ✓ Starting...
+ ✓ Ready in 463ms
+[Analytics] Session started: session_1773948637018_aq7plxh7t
+[Analytics] Event tracked: session_start { userAgent: 'Node.js/22' }
+prisma:error
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   |
+ 6 |   provider = "postgresql"
+ 7 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+Database connection failed: Error [PrismaClientInitializationError]:
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   |
+ 6 |   provider = "postgresql"
+ 7 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:7)
+    at async e9 (.next/server/app/api/chat/route.js:79:903)
+    at async o (.next/server/app/api/chat/route.js:79:5907)
+    at async f (.next/server/app/api/chat/route.js:79:6911) {
+  clientVersion: '6.19.2',
+  errorCode: undefined,
+  retryable: undefined
+}

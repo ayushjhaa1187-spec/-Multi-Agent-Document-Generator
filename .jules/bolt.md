@@ -1,0 +1,3 @@
+## 2024-10-24 - React.memo Optimization in Vercel AI SDK
+**Learning:** When using `useChat` from `ai/react`, the frequent stream updates cause parent component re-renders. Static or purely functional list items inside the mapped messages array (like a Copy button) can suffer significant unnecessary re-renders during the stream, impacting client-side performance.
+**Action:** Always verify if child components mapped within `useChat`'s `messages` array can be wrapped with `React.memo` to shield them from the rapid state updates during streaming.
