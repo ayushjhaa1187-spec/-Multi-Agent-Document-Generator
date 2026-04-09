@@ -1,0 +1,4 @@
+## 2024-05-18 - Stack Trace Exposure via Public Analytics API
+**Vulnerability:** The in-memory analytics tracker (`AnalyticsTracker`) was recording full error stack traces alongside error events. These events are subsequently exposed publicly via the unauthenticated GET endpoint `/api/analytics`.
+**Learning:** In applications where in-memory state or events are exposed via a public or client-accessible endpoint, it is critical to sanitize the data before storage. Data intended solely for server-side debugging must remain explicitly on the server (e.g., standard console logging) and not be mixed into structured data that could be fetched remotely.
+**Prevention:** Sanitize all diagnostic data before persisting it to structures that will be exposed through APIs. Use dedicated, secure server logging (e.g., `console.error`) to retain detailed stack traces for internal observability while keeping client-facing payloads clean of sensitive internals.
