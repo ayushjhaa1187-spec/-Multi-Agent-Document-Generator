@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -37,6 +37,7 @@ export default function BRDGenerator() {
   const [projectNameInput, setProjectNameInput] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
     api: '/api/chat',
@@ -70,6 +71,13 @@ export default function BRDGenerator() {
       setError(null);
     }
   }, [isLoading]);
+
+  // Auto-scroll to bottom of chat
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [messages, isLoading]);
 
   const handleProjectNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -192,7 +200,10 @@ export default function BRDGenerator() {
               </button>
             </div>
 
-            <div className="chat-container glass-card p-6 sm:p-8 mb-6 shadow-2xl min-h-[400px] sm:min-h-[500px] max-h-[600px] overflow-y-auto">
+            <div
+              className="chat-container glass-card p-6 sm:p-8 mb-6 shadow-2xl min-h-[400px] sm:min-h-[500px] overflow-y-auto"
+              style={{ maxHeight: '600px', overflowY: 'auto' }}
+            >
               {messages.length === 0 && !isLoading && (
                 <div className="text-center text-gray-400 py-12 sm:py-20">
                   <p className="text-lg sm:text-xl mb-2 float">🎯 Describe Your Project Requirements</p>
@@ -236,6 +247,7 @@ export default function BRDGenerator() {
                     </button>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
