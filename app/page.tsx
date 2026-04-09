@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -37,6 +37,7 @@ export default function BRDGenerator() {
   const [projectNameInput, setProjectNameInput] = useState('');
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, setMessages } = useChat({
     api: '/api/chat',
@@ -70,6 +71,10 @@ export default function BRDGenerator() {
       setError(null);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
 
   const handleProjectNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,6 +241,7 @@ export default function BRDGenerator() {
                     </button>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
 
@@ -249,6 +255,8 @@ export default function BRDGenerator() {
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
+                  autoFocus
+                  aria-label="Message input"
                 />
                 <button
                   type="submit"
