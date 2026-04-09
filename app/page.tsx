@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -35,6 +35,8 @@ function CopyButton({ content }: { content: string }) {
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
   const [projectNameInput, setProjectNameInput] = useState('');
+  const formRef = useRef<HTMLFormElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [stage, setStage] = useState<'clarify' | 'generate'>('clarify');
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +72,22 @@ export default function BRDGenerator() {
       setError(null);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      if (input) {
+        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      }
+    }
+  }, [input]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      formRef.current?.requestSubmit();
+    }
+  };
 
   const handleProjectNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,15 +258,18 @@ export default function BRDGenerator() {
             </div>
 
             {/* Input Form */}
-            <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
+            <form ref={formRef} onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+                <textarea
+                  ref={textareaRef}
                   value={input}
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none overflow-y-auto"
                   disabled={isLoading}
+                  rows={1}
+                  aria-label="Chat input"
                 />
                 <button
                   type="submit"
