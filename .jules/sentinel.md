@@ -1,0 +1,4 @@
+## 2025-02-17 - Prevent Stack Trace Leakage via Public Analytics API
+**Vulnerability:** The analytics system (`AnalyticsTracker.trackError`) automatically captured and stored full application error stack traces in its in-memory event array. These events were then publicly accessible without authentication via the `/api/analytics` endpoint.
+**Learning:** In-memory caching/logging arrays must be treated as potentially public boundaries if exposed by metrics/health APIs. Even internal error tracking systems must proactively sanitize sensitive data before storing it in memory if there's any pathway for that memory state to be read.
+**Prevention:** Implement distinct data flows for internal observability vs analytics. Internal logs (e.g., `console.error`) should receive rich diagnostic data (stack traces), while analytics/metrics events must only record sanitized error messages before being committed to tracking arrays.
