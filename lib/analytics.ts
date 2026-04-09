@@ -44,12 +44,21 @@ class AnalyticsTracker {
     properties?: Record<string, any>,
     userId?: string
   ): void {
+    // Sanitize properties to remove sensitive data like stack traces
+    let safeProperties = properties;
+    if (properties) {
+      safeProperties = { ...properties };
+      if ('stack' in safeProperties) {
+        delete safeProperties.stack;
+      }
+    }
+
     const analyticsEvent: AnalyticsEvent = {
       event,
       timestamp: new Date(),
       userId,
       sessionId: this.sessionId,
-      properties,
+      properties: safeProperties,
     };
 
     this.events.push(analyticsEvent);
@@ -110,9 +119,12 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // Log the full error to server-side logs to preserve observability
+    console.error(`[Analytics] Error tracked: ${errorMessage}`, error instanceof Error ? error.stack : undefined, context);
+
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
