@@ -1,0 +1,3 @@
+## 2024-04-01 - Memoizing Pure Components in AI SDK Message Lists
+**Learning:** The AI SDK's `useChat` hook updates the `messages` array aggressively during streaming. Any child components rendered within `messages.map` (such as a static `CopyButton`) will re-render unnecessarily on every chunk unless explicitly wrapped in `React.memo()`. This causes noticeable UI jank and performance degradation during long generation sequences in this codebase's chat interfaces.
+**Action:** Always wrap static or pure UI components rendered inside AI chat message lists with `React.memo()` to prevent wasted render cycles.
