@@ -55,16 +55,9 @@ export async function POST(req: Request) {
       );
     }
 
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      recordMetric('/api/chat', Date.now() - startTime, 503);
-      return new Response(
-        JSON.stringify({ error: 'Database connection failed' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // ⚡ Bolt Optimization: Removed synchronous `SELECT 1` database health check
+    // Database interaction is deferred to the onFinish callback, eliminating the
+    // need for synchronous connectivity checks which unnecessarily worsen Time-To-First-Token (TTFT).
 
     // Run planner to decide flow; keep prompt identical
     const plannerResult = await streamText({

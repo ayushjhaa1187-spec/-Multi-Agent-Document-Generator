@@ -1,0 +1,3 @@
+## 2024-05-18 - Avoid synchronous DB guard clauses on streaming endpoints
+**Learning:** Adding a synchronous database health check (like `SELECT 1`) at the start of a streaming API route significantly worsens Time-To-First-Token (TTFT), especially when the actual database operations are deferred to the `onFinish` callback. This creates an unnecessary bottleneck.
+**Action:** When working on streaming endpoints where side-effects (e.g., saving data) happen asynchronously or are deferred to `onFinish`, remove upfront synchronous database checks. Always defer DB interactions until absolutely necessary to maximize TTFT.
