@@ -2,8 +2,10 @@
 
 import { useChat } from 'ai/react';
 import { useState, useEffect } from 'react';
+import React from 'react';
 
-function CopyButton({ content }: { content: string }) {
+// ⚡ Bolt Optimization: Memoize the CopyButton component to prevent unnecessary re-renders of static list items during active message streaming in useChat.
+const CopyButton = React.memo(function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -30,7 +32,7 @@ function CopyButton({ content }: { content: string }) {
       )}
     </button>
   );
-}
+});
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
