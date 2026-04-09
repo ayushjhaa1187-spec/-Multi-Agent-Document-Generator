@@ -110,9 +110,12 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // 🛡️ Sentinel: Removed stack trace from analytics event.
+    // The `events` array is exposed publicly via the unauthenticated `/api/analytics` endpoint.
+    // Including stack traces here exposes sensitive internals and creates an information disclosure vulnerability.
+    // Full error details including stack traces should only be logged server-side via console.error.
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }

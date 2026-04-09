@@ -1,0 +1,4 @@
+## 2025-01-20 - Exposed Stack Traces in Unauthenticated Analytics API
+**Vulnerability:** The in-memory `events` array in `lib/analytics.ts` stored full Error stack traces when `trackError` was called. These events were then exposed publicly via the unauthenticated `/api/analytics` endpoint, leading to sensitive internal application details being leaked.
+**Learning:** In architectures where analytics or telemetry data is both stored in-memory and exposed via an unauthenticated endpoint, any sensitive data added to those analytics events becomes an information disclosure vulnerability. Stack traces should be kept exclusively in server-side logs.
+**Prevention:** Sanitize all event data before adding it to in-memory caches or arrays that may be exposed via public endpoints. Ensure that `stack` and similar properties are never included in the object pushed to `this.events`.
