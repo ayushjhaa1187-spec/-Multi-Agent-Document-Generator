@@ -241,22 +241,43 @@ export default function BRDGenerator() {
 
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
-              <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+              <div className="flex gap-2 sm:gap-4 mb-2">
+                <textarea
                   value={input}
                   onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (input.trim() && !isLoading) {
+                        handleSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
+                      }
+                    }
+                  }}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  maxLength={5000}
+                  aria-describedby="chat-input-counter"
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none min-h-[56px] max-h-[200px]"
                   disabled={isLoading}
+                  rows={1}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base self-end"
                 >
                   {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
                 </button>
+              </div>
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-gray-400 text-xs sm:text-sm">Press Enter to send, Shift+Enter for new line</span>
+                <span
+                  id="chat-input-counter"
+                  className={`text-xs sm:text-sm font-medium transition-colors duration-200 ${
+                    input.length >= 4500 ? 'text-orange-400' : 'text-gray-500'
+                  }`}
+                >
+                  {input.length}/5000
+                </span>
               </div>
 
               {/* Stage Indicator */}
