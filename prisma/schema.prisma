@@ -26,17 +26,19 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  brds        BRD[]
+  brds        BRD[]      @relation("ProjectBRDs")
   documents   Document[]
   jobQueues   JobQueue[]
   
   conversations AIConversation[]
+
+  @@index([createdAt])
 }
 
 model BRD {
   id            String   @id @default(cuid())
   projectId     String
-  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project       Project  @relation("ProjectBRDs", fields: [projectId], references: [id], onDelete: Cascade)
   title         String?
   status        String   @default("draft")
   contentJson   Json?
@@ -52,7 +54,10 @@ model BRD {
   rawInput      String?
   generatedBy   String   @default("gpt-4o")
 
+  @@unique([projectId, version])
   @@index([projectId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Document {

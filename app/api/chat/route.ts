@@ -109,7 +109,7 @@ export async function POST(req: Request) {
           let savedVersion: number | null = null;
 
           await prisma.$transaction(
-            async (tx) => {
+            async (tx: any) => {
               // Fix Race Condition: Use atomic upsert on unique name field
               const project = await tx.project.upsert({
                 where: { name: projectName.trim() },
@@ -182,7 +182,7 @@ export async function POST(req: Request) {
       return new Response(
         JSON.stringify({
           error: 'AI Service Error',
-          message: 'The AI service is unavailable right now. Please try again shortly.',
+          message: 'The AI service is currently unavailable. Please try again later.',
         }),
         { status: 503, headers: { 'Content-Type': 'application/json' } }
       );
@@ -190,10 +190,11 @@ export async function POST(req: Request) {
 
     recordMetric('/api/chat', duration, 500);
     analyticsTracker.trackApiRequest('/api/chat', duration, 500, 'Internal server error');
+    // Security: Do not expose internal error details to client
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
-        message: 'An unexpected error occurred. Please try again.',
+        message: 'An unexpected error occurred. Please try again later.',
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
