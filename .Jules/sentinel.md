@@ -1,0 +1,4 @@
+## 2024-05-18 - Sensitive Error Information Exposure in Logs
+**Vulnerability:** Found multiple instances where entire error objects were passed directly to `console.error` (e.g., `console.error('API error:', error)`). This risks leaking sensitive information like stack traces, internal system paths, or environment-specific data into logs, which may be ingested by log aggregators or surfaced unintentionally.
+**Learning:** Even internal logging mechanisms like `console.error` should be treated as potentially unsafe for raw error objects, as log data often persists and may be accessible to a wider audience than intended.
+**Prevention:** Always sanitize error logs by extracting only the necessary information, such as the error message (e.g., `error instanceof Error ? error.message : String(error)`), unless detailed stack traces are explicitly required and guaranteed to be secure.
