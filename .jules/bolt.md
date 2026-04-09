@@ -1,0 +1,3 @@
+## 2024-05-15 - Synchronous DB health checks are anti-patterns in streaming APIs
+**Learning:** In this codebase, the `/api/chat` route defers database interaction to the `onFinish` callback of `streamText`, which eliminates the need for synchronous connectivity checks like `SELECT 1` before responding. Doing a `SELECT 1` directly inside the request handler is a blocking anti-pattern that severely delays the Time To First Byte (TTFB) and API response.
+**Action:** Avoid explicit database health checks inside API routes that are meant to return streaming responses immediately. Always prioritize deferring DB interactions or side-effects to background tasks or `onFinish` callbacks unless strictly necessary for request validation.
