@@ -109,10 +109,10 @@ class AnalyticsTracker {
    * Track error
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
+    console.error('[Analytics] Error tracked:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
