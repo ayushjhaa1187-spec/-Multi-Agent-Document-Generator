@@ -1,0 +1,3 @@
+## 2024-05-24 - Synchronous DB checks blocking TTFT in API Routes
+**Learning:** Adding synchronous database checks (like `SELECT 1`) early in streaming API routes (like `/api/chat`) severely bottlenecks Time-To-First-Token (TTFT) when database connections are slow or delayed. Since actual DB interactions are often safely deferred to `onFinish` callbacks, blocking the initial AI stream response is unnecessary and creates an artificially slow UX.
+**Action:** When working on streaming APIs, defer all non-essential database interactions (like saving histories or verifying connections) to asynchronous callbacks (e.g., `onFinish`) to prioritize TTFT.
