@@ -6,12 +6,35 @@ import { REQUIREMENT_WRITER_SYSTEM_PROMPT } from '@/lib/agents/requirement-write
 import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
+import { rateLimiter } from '@/lib/rate-limit';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const startTime = Date.now();
   try {
+    // Rate Limiting (Security Enhancement)
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 'unknown';
+    const limitResult = rateLimiter.check(ip, 10, 60 * 1000); // 10 requests per minute
+
+    if (!limitResult.success) {
+      const duration = Date.now() - startTime;
+      recordMetric('/api/chat', duration, 429);
+      analyticsTracker.trackApiRequest('/api/chat', duration, 429, 'Rate limit exceeded');
+      return new Response(
+        JSON.stringify({ error: 'Too many requests', message: 'Please try again later.' }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-RateLimit-Limit': '10',
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': limitResult.reset.toString(),
+          },
+        }
+      );
+    }
+
     const { messages, projectName } = await req.json();
 
     // Validate messages array shape (Security Enhancement: Input Validation)
