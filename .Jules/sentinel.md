@@ -1,0 +1,4 @@
+## 2024-05-15 - [Medium] Missing error handling exposing stack traces
+**Vulnerability:** The `analyticsTracker` in `lib/analytics.ts` was storing `error.stack` inside memory-bounded events arrays, and exposing these arrays verbatim through the public `/api/analytics` route.
+**Learning:** In-memory caching/logging structures must be sanitized before storing data, as they are often exposed through admin or metrics API endpoints. Storing stack traces in memory arrays represents an information leakage risk when those arrays are exposed.
+**Prevention:** Ensure that error tracking functions (like `trackError`) strip sensitive debugging information (like stack traces) from error objects before storing them in state or databases accessible by external API routes. Provide generic error properties instead.
