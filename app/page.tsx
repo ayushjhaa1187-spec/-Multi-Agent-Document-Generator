@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="project-name-input" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="project-name-input"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -160,7 +161,7 @@ export default function BRDGenerator() {
 
         {/* Error Display */}
         {error && (
-          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+          <div role="alert" aria-live="assertive" className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
             <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
               {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
             </p>
@@ -225,11 +226,12 @@ export default function BRDGenerator() {
                 ))}
 
                 {isLoading && (
-                  <div className="flex items-center space-x-2 text-purple-400 animate-pulse p-4">
-                    <div className="animate-spin h-5 w-5 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+                  <div role="status" aria-live="polite" className="flex items-center space-x-2 text-purple-400 animate-pulse p-4">
+                    <div aria-hidden="true" className="animate-spin h-5 w-5 border-2 border-purple-500 border-t-transparent rounded-full"></div>
                     <span>Generating response...</span>
                     <button
                       onClick={() => stop()}
+                      aria-label="Stop generating response"
                       className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
                     >
                       Stop
@@ -246,6 +248,7 @@ export default function BRDGenerator() {
                   type="text"
                   value={input}
                   onChange={handleInputChange}
+                  aria-label="Chat input"
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
