@@ -1,0 +1,4 @@
+## 2024-03-01 - [Sensitive Data Exposure in Error Handling]
+**Vulnerability:** The application was exposing full error objects, potentially including sensitive stack traces and database details, via `console.error` logs and in-memory analytics caching (which could be exposed via `/api/metrics` or `/api/analytics`).
+**Learning:** In-memory caching structures and raw `console.error` calls often inadvertently capture and leak sensitive implementation details when handling exceptions. This is particularly critical when APIs aggregate or expose internal states.
+**Prevention:** Always sanitize error outputs at the boundary. Use `error instanceof Error ? error.message : String(error)` to extract only the safe error message, and explicitly avoid storing or logging `error.stack` or raw database error objects.
