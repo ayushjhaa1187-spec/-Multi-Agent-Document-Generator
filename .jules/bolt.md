@@ -1,0 +1,3 @@
+## 2024-05-18 - Remove synchronous database health check in chat API
+**Learning:** Explicit database connectivity checks (like `SELECT 1`) at the start of API routes block the main thread unnecessarily and increase latency. In many cases, including this codebase's architecture, database errors during background tasks (like `onFinish` in `streamText`) are better handled asynchronously.
+**Action:** Do not use `SELECT 1` or similar checks at the start of API routes to test connectivity; rely on asynchronous error handling during actual database operations.
