@@ -1,10 +1,7 @@
-
-> multi-agent-brd-generator@1.0.0 dev
-> next dev
-
+ ⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
    ▲ Next.js 15.5.12
-   - Local:        http://localhost:3000
-   - Network:      http://192.168.0.2:3000
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.2:3001
    - Experiments (use with caution):
      · serverActions
 
@@ -12,6 +9,11 @@
    Using tsconfig file: ./tsconfig.json
  ✓ Ready in 2.1s
  ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Compiled / in 7.3s (752 modules)
+ GET / 200 in 8855ms
+ ⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ ✓ Compiled in 1582ms (729 modules)
+ ✓ Compiled in 481ms (729 modules)
+ GET / 200 in 619ms
+ GET / 200 in 97ms
