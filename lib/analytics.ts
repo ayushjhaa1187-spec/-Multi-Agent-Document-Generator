@@ -110,9 +110,17 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+
+    // 🛡️ Sentinel: The events array is publicly exposed via the unauthenticated GET /api/analytics endpoint.
+    // Sensitive information like stack traces must be omitted to prevent exposure. We log it internally for observability.
+    if (error instanceof Error && error.stack) {
+      console.error(`[Analytics Internal] Error stack trace for "${errorMessage}":\n`, error.stack);
+    } else {
+      console.error(`[Analytics Internal] Error logged: ${errorMessage}`);
+    }
+
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
