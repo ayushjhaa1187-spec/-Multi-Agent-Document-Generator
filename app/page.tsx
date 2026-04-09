@@ -3,7 +3,9 @@
 import { useChat } from 'ai/react';
 import { useState, useEffect } from 'react';
 
-function CopyButton({ content }: { content: string }) {
+import React from 'react';
+
+const CopyButton = React.memo(function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -30,7 +32,7 @@ function CopyButton({ content }: { content: string }) {
       )}
     </button>
   );
-}
+});
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
@@ -70,6 +72,14 @@ export default function BRDGenerator() {
       setError(null);
     }
   }, [isLoading]);
+
+  useEffect(() => {
+    const textarea = document.getElementById('chat-textarea');
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 128)}px`;
+    }
+  }, [input]);
 
   const handleProjectNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,14 +251,24 @@ export default function BRDGenerator() {
 
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
-              <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+              <div className="flex gap-2 sm:gap-4 mb-4 items-end">
+                <textarea
                   value={input}
                   onChange={handleInputChange}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+                      e.preventDefault();
+                      if (input.trim()) {
+                        handleSubmit(e as any);
+                      }
+                    }
+                  }}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  aria-label="Chat message"
+                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base resize-none overflow-y-auto max-h-32"
                   disabled={isLoading}
+                  rows={1}
+                  id="chat-textarea"
                 />
                 <button
                   type="submit"
