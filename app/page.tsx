@@ -1,9 +1,11 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function CopyButton({ content }: { content: string }) {
+// ⚡ Bolt Optimization: Wrap CopyButton in React.memo() to prevent unnecessary re-renders
+// during typing and message streaming in the useChat loop.
+const CopyButton = React.memo(function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -30,7 +32,7 @@ function CopyButton({ content }: { content: string }) {
       )}
     </button>
   );
-}
+});
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
