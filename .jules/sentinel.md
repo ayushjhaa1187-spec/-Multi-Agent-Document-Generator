@@ -1,0 +1,4 @@
+## 2024-04-11 - Information Disclosure via Analytics Tracker
+**Vulnerability:** In-memory analytics events logged stack traces to `this.events` array. The `/api/analytics` endpoint publicly exposed these events without authentication, leaking sensitive application internals and stack traces.
+**Learning:** In-memory logging structures exported to unauthenticated endpoints require strict field sanitization to prevent sensitive information disclosure. Error objects often contain stack traces that must not be serialized into publicly accessible event objects.
+**Prevention:** Avoid serializing entire error objects or explicit stack traces into publicly accessible memory or metrics arrays. Ensure internal error logging mechanism (e.g. `console.error`) preserves the context for debugging without exposing it via client APIs.
