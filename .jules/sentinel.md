@@ -1,0 +1,4 @@
+## 2024-04-12 - Information Disclosure in Public Analytics Endpoint
+**Vulnerability:** The `AnalyticsTracker` utility was storing full error objects, including sensitive stack traces, in memory. This in-memory data was then exposed publicly without authentication via the `/api/analytics` endpoint, potentially leaking internal architecture and dependency information to attackers.
+**Learning:** In-memory caching and logging structures that are exposed via public APIs (like metrics or analytics endpoints) can inadvertently become data leaks if the data is not sanitized before storage.
+**Prevention:** Always sanitize sensitive information (like stack traces, PII, or internal IDs) before storing it in data structures that will be exposed or serialized, especially on unauthenticated endpoints. Keep full error details strictly in server-side logs.
