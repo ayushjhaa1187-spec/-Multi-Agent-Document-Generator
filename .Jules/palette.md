@@ -1,3 +1,3 @@
-## 2024-05-23 - Dynamic Character Counter
-**Learning:** Combining `aria-describedby` with a visual character counter improves form accessibility significantly without cluttering the UI. Users with screen readers can check the limit, while sighted users get immediate feedback.
-**Action:** For all limited text inputs, implement a character counter and link it via `aria-describedby`.
+## 2026-04-12 - AI Chat Interface Accessibility and Multi-Line Support
+**Learning:** Single-line `<input>` fields in AI chat interfaces are poor for UX because users often need to provide structured or multi-line contexts. Additionally, missing `aria-label`s on generic input elements like "describe your requirements" severely impact screen reader accessibility.
+**Action:** Always prefer `<textarea>` for chat interfaces, configure it to auto-resize using `scrollHeight` (adding 2px for borders to prevent scroll thrashing), handle form submission manually on `Enter` (while supporting `Shift+Enter` for newlines and checking `!e.nativeEvent.isComposing` for IME), and ensure `aria-label` is applied for accessibility.
