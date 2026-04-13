@@ -1,0 +1,4 @@
+## 2024-05-24 - Information Exposure in Analytics Endpoint
+**Vulnerability:** The `trackError` method in `lib/analytics.ts` was storing full `error.stack` traces in the in-memory cache, which was subsequently exposed to unauthenticated users via the `/api/analytics` endpoint.
+**Learning:** In-memory caches and logging arrays are often treated as safe internal storage, but can easily be leaked if an administrative or public endpoint exposes their contents directly. Stack traces provide attackers with deep insight into server directory structures and internal application logic.
+**Prevention:** Always sanitize data *before* writing it to any persistent or in-memory store that might be read by a public or loosely protected API endpoint. Use internal logging (e.g. `console.error`) to preserve context for server-side observability while only storing generic error messages for metrics endpoints.
