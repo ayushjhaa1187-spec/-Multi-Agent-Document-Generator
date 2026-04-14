@@ -110,9 +110,11 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // 🛡️ Sentinel: Do not include `error.stack` here. Events are stored in memory
+    // and exposed directly via the public `GET /api/analytics` endpoint.
+    // Including stack traces here leaks internal server details to the public.
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
