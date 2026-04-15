@@ -1,0 +1,4 @@
+## 2024-05-18 - Stack Trace Exposure in Unauthenticated Analytics API
+**Vulnerability:** The `AnalyticsTracker` was storing full error stack traces in memory and exposing them via an unauthenticated GET request at `/api/analytics`. This leaked internal path structures and implementation details to any user.
+**Learning:** In-memory caching and logging structures that are exposed to external endpoints (even for legitimate metrics purposes) need strictly sanitized fields. Do not blindly map full internal error structures to external outputs.
+**Prevention:** Sanitized sensitive properties (like stack traces) from analytics events before they are pushed to the in-memory array. We ensure observability is maintained by using `console.error` server-side instead of relying on the metrics API for debugging information.
