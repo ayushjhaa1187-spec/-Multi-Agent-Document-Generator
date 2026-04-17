@@ -1,0 +1,4 @@
+## 2024-05-15 - Information Leakage via Analytics Endpoint
+**Vulnerability:** The `AnalyticsTracker` in `lib/analytics.ts` captures and stores error stack traces in memory. This internal state is directly exposed via the unauthenticated public endpoint `/api/analytics`.
+**Learning:** Even if data is intended for internal tracking, any state accessible via a public endpoint must be sanitized. Internal tracking mechanisms can inadvertently become vectors for exposing sensitive application internals (like file paths and component structures present in stack traces) if their storage is publicly queryable.
+**Prevention:** Never include sensitive information (like stack traces or PII) in state that will be exposed publicly. Sanitization should occur at the point of capture into the exposed store, while full details can be retained in secure, non-exposed mechanisms like server-side logging.
