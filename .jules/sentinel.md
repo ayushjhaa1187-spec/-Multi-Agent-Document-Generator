@@ -1,0 +1,4 @@
+## 2024-04-18 - Information Leakage via Public Analytics API
+**Vulnerability:** The unauthenticated `GET /api/analytics` endpoint exposed recent events tracked by `AnalyticsTracker`, which included full error stack traces from `trackError()`. This leaked sensitive internal application details.
+**Learning:** Even internal logging or tracking utilities can become vectors for information leakage if their data structures are directly serialized and exposed to public or unauthenticated endpoints.
+**Prevention:** Always sanitize sensitive context (like stack traces, user IDs, or environment details) before adding them to publicly accessible or broad-scope tracking arrays. Retain full, unsanitized details in server-side logs (`console.error`) for internal debugging while only exposing safe summaries.
