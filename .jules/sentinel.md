@@ -1,0 +1,4 @@
+## 2025-02-28 - Preventing Information Leakage in Analytics Endpoint
+**Vulnerability:** The public GET `/api/analytics/route.ts` endpoint exposed the in-memory array `events` from `lib/analytics.ts`. `trackError` recorded raw error stack traces, which were added to this array, leading to a medium severity information disclosure vulnerability when accessing the endpoint.
+**Learning:** Analytics endpoints that aggregate client and server metrics or logs can inadvertently become public exposure points if they fail to sanitize errors before storing them in state exposed via a public API.
+**Prevention:** Always omit sensitive fields like `stack` from publicly exposable models or tracking arrays. Internal error observability (e.g., full stack traces) should be maintained using server-side logging (`console.error`) rather than appending to shared client/server tracking state.
