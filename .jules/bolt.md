@@ -1,0 +1,3 @@
+## 2024-04-22 - Memoizing Static Components within AI Streaming UI
+**Learning:** The Vercel AI SDK's `useChat` hook updates state on every chunk of a streamed response. This frequent state update causes the parent component (`BRDGenerator` in `app/page.tsx`) and all its unmemoized children inside the messages list (like `CopyButton`) to re-render constantly during streaming.
+**Action:** When implementing chat interfaces or other heavily streamed/rapidly updating UIs, aggressively wrap static or pure UI subcomponents (like buttons or unchanging UI elements mapped within lists) in `React.memo()`. This drastically cuts down on unnecessary re-renders of previous list items while a single new item is streaming.
