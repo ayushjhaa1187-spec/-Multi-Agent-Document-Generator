@@ -1,0 +1,4 @@
+## 2024-04-24 - Information Leakage in Public Analytics Endpoint
+**Vulnerability:** The `AnalyticsTracker` implementation previously tracked and stored full error stack traces in its in-memory event array when errors occurred. Because these events are publicly exposed via the unauthenticated `GET /api/analytics` endpoint, this inadvertently leaked sensitive internal code structures and implementation details to any unauthorized user.
+**Learning:** Even seemingly internal logging or tracking utilities can become security risks if their underlying data structures are exposed externally. In this architecture, the analytics data is made public, meaning any data added to it must be treated as public.
+**Prevention:** Always sanitize sensitive data (such as stack traces, user PII, or internal tokens) before pushing it to data structures that are consumed by public or unauthenticated APIs. Implement strict boundaries on what data is considered safe for public analytics.
