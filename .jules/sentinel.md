@@ -1,0 +1,4 @@
+## 2025-04-25 - Information Leakage via Error Stack Traces in Unauthenticated Analytics Endpoint
+**Vulnerability:** The unauthenticated `/api/analytics` endpoint publicly exposed the application's recent tracked events, which included error stack traces. Stack traces can inadvertently leak sensitive internal file paths, framework versions, or architectural details to anonymous users.
+**Learning:** The analytics tracker's `trackError` utility blindly serialized the full error stack when available, without considering that these events might be fully exposed via the unauthenticated `GET /api/analytics` route.
+**Prevention:** Always omit or heavily sanitize sensitive debugging details like stack traces from tracked events that are exposed directly to users or publicly accessible endpoints. Avoid relying entirely on the consumer's ability to filter out sensitive properties.

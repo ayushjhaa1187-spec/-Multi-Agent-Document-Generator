@@ -110,9 +110,9 @@ class AnalyticsTracker {
    */
   trackError(error: Error | string, context?: Record<string, any>): void {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    // 🛡️ Sentinel: Omit stack trace tracking to prevent sensitive internal path leakage when exposed via public GET /api/analytics
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
