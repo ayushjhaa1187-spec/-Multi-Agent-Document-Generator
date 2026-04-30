@@ -1,0 +1,4 @@
+## 2024-05-20 - Information Exposure via Analytics Tracker
+**Vulnerability:** Internal error stack traces were being tracked and exposed via a public, unauthenticated API endpoint (`/api/analytics`).
+**Learning:** Adding `.stack` on errors to analytics systems can easily lead to information disclosure of sensitive internal server paths and modules when analytics metrics are exposed via public APIs.
+**Prevention:** Avoid collecting and storing raw stack traces for application analytics, particularly those accessible from user-facing or unauthenticated endpoints. When internal monitoring is needed, it should be logged server-side directly to secure, internal systems rather than tracked inside a general analytics module accessed via API.
