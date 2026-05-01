@@ -1,0 +1,4 @@
+## 2024-05-01 - Prevent sensitive information disclosure via analytics stack traces
+**Vulnerability:** The `AnalyticsTracker.trackError()` method was including full error stack traces (`error.stack`) in its tracking payload, which could be exposed via the publicly accessible, unauthenticated `/api/analytics` endpoint.
+**Learning:** Even internal diagnostic tools like analytics trackers can become vectors for information disclosure if they capture excessive context (like stack traces) and their output is accessible externally.
+**Prevention:** Always sanitize error payloads sent to analytics or monitoring services. Explicitly avoid including stack traces in tracked events unless the endpoint serving those events is strictly authenticated and authorized.
