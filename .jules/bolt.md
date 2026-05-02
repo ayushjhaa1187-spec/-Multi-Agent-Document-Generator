@@ -1,0 +1,3 @@
+## 2024-05-02 - Memoize items rendered by Vercel AI SDK useChat
+**Learning:** Vercel AI SDK's `useChat` updates the `messages` array for every token during text streaming. If the message components inside `messages.map()` are not memoized, it results in O(N²) rendering complexity as all past messages re-render constantly for each token in the new message.
+**Action:** Always extract individual items rendered inside `messages.map()` into standalone components wrapped in `React.memo()` to prevent unnecessary re-renders during text streaming.
