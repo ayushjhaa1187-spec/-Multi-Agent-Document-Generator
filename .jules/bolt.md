@@ -1,0 +1,3 @@
+## 2025-02-23 - Component Memoization with Vercel AI SDK
+**Learning:** In chat interfaces using the Vercel AI SDK's `useChat`, the `messages` array updates extremely frequently during text streaming. Without memoizing individual message components, the entire message list re-renders on every streaming chunk, leading to an O(N²) rendering cost over the course of a stream.
+**Action:** Extract list items rendered within `messages.map()` into standalone components and wrap them in `React.memo()` to ensure only the currently streaming message re-renders.
