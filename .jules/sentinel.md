@@ -1,0 +1,4 @@
+## 2024-05-24 - Stop Stack Trace Leakage in Analytics API
+**Vulnerability:** The public `/api/analytics` endpoint exposed sensitive server stack traces via the `recentEvents` property, leaking internal server paths and implementation details.
+**Learning:** While capturing stack traces in core telemetry (`analyticsTracker`) is useful for internal debugging, returning raw error events directly through unauthenticated public APIs leaks sensitive information. Sanitization must occur at the API boundary, not by removing telemetry collection.
+**Prevention:** Always sanitize or omit sensitive properties (like `stack`, `password`, or `token`) when mapping internal telemetry or database objects to API responses, especially on public endpoints.
