@@ -1,3 +1,3 @@
-## 2024-05-23 - Dynamic Character Counter
-**Learning:** Combining `aria-describedby` with a visual character counter improves form accessibility significantly without cluttering the UI. Users with screen readers can check the limit, while sighted users get immediate feedback.
-**Action:** For all limited text inputs, implement a character counter and link it via `aria-describedby`.
+## 2025-05-07 - Auto-resizing Chat Textarea
+**Learning:** Users often paste or type multi-line text into chat interfaces. Using a standard single-line `<input>` is a poor UX. Replacing it with an auto-resizing `<textarea>` requires careful handling of React hooks (`useEffect`), DOM manipulation (`scrollHeight`), and keyboard events (`Enter` to submit, `Shift+Enter` for newlines). Furthermore, Tailwind flex container alignment (`items-end`) is crucial to avoid siblings stretching inappropriately.
+**Action:** Always consider auto-resizing textareas for chat inputs and use the established `useEffect` + `scrollHeight` pattern with flex alignment.
