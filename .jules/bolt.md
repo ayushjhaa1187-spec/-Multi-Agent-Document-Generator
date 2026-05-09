@@ -1,0 +1,3 @@
+## 2025-05-09 - AI SDK Streaming Re-Renders
+**Learning:** In chat interfaces using Vercel AI SDK's `useChat`, the frequent state updates during text streaming cause O(N²) re-renders of the entire message list if the message components aren't memoized.
+**Action:** Always extract items rendered within `messages.map()` into standalone components wrapped in `React.memo()` to prevent unnecessary re-renders of older messages while a new message streams.
