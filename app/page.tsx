@@ -1,7 +1,7 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -70,6 +70,37 @@ export default function BRDGenerator() {
       setError(null);
     }
   }, [isLoading]);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      // Store current scroll position to avoid jumping
+      const currentScrollY = window.scrollY;
+      const currentScrollTop = textarea.scrollTop;
+
+      textarea.style.height = 'auto';
+      const scrollHeight = textarea.scrollHeight;
+
+      // We set a max height in CSS, so it's okay to let scrollHeight grow
+      textarea.style.height = scrollHeight + 'px';
+
+      // Restore scroll positions
+      window.scrollTo(0, currentScrollY);
+      textarea.scrollTop = currentScrollTop;
+    }
+  }, [input]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Submit on Enter without Shift
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      if (!isLoading && input.trim()) {
+        e.currentTarget.form?.requestSubmit();
+      }
+    }
+  };
 
   const handleProjectNameSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,13 +272,15 @@ export default function BRDGenerator() {
 
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
-              <div className="flex gap-2 sm:gap-4 mb-4">
-                <input
-                  type="text"
+              <div className="flex gap-2 sm:gap-4 mb-4 items-end">
+                <textarea
+                  ref={textareaRef}
                   value={input}
                   onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
-                  className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
+                  rows={1}
+                  className="flex-1 min-w-0 resize-none max-h-48 overflow-y-auto px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
                 />
                 <button
