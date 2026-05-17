@@ -1,10 +1,11 @@
 
-> multi-agent-brd-generator@1.0.0 dev
+> multi-agent-brd-generator@1.0.0 dev /app
 > next dev
 
-   ▲ Next.js 15.5.12
-   - Local:        http://localhost:3000
-   - Network:      http://192.168.0.2:3000
+ ⚠ Port 3000 is in use by an unknown process, using available port 3002 instead.
+   ▲ Next.js 15.5.18
+   - Local:        http://localhost:3002
+   - Network:      http://192.168.0.2:3002
    - Experiments (use with caution):
      · serverActions
 
@@ -12,6 +13,5 @@
    Using tsconfig file: ./tsconfig.json
  ✓ Ready in 2.1s
  ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Compiled / in 7.9s (747 modules)
+ GET / 200 in 9854ms
