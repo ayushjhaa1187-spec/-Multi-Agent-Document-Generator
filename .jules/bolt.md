@@ -1,0 +1,3 @@
+## 2024-05-17 - Optimize React rendering in AI chat streams
+**Learning:** During AI text streaming using `useChat`, the `messages` array updates on every token. Without memoization, mapping over the array causes every message to re-render for every new token received, leading to O(N^2) rendering performance where N is the number of tokens.
+**Action:** Extract list items rendered within `messages.map()` into standalone components wrapped in `React.memo()`. This reduces rendering overhead to O(1) per token as only the currently streaming message re-renders. Always define the memoized component outside of the parent component to prevent unmounting and remounting.
