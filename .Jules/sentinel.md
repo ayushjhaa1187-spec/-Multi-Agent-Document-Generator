@@ -1,0 +1,4 @@
+## 2024-05-18 - Prevent Stack Trace Leakage in Observability Endpoints
+**Vulnerability:** Internal server error stack traces were exposed via the `/api/analytics` endpoint because `AnalyticsTracker` stores stack traces on error events and the API returned these events raw.
+**Learning:** When exposing internal observability data (like `AnalyticsTracker` events) via API endpoints, sensitive server internals like stack traces must be sanitized at the API response level rather than disabling internal tracking, to prevent information exposure without degrading observability.
+**Prevention:** Use object destructuring assignment with the rest operator (e.g., `const { stack, ...safeProperties } = properties;`) as a safe, immutable pattern to omit the `stack` property from objects before sending them in API responses.
