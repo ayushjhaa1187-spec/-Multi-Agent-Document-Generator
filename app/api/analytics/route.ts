@@ -1,18 +1,26 @@
-import { analyticsTracker } from '@/lib/analytics';
+import { analyticsTracker } from "@/lib/analytics";
 
 export async function GET() {
   const metrics = analyticsTracker.getMetrics();
   const sessionInfo = analyticsTracker.getSessionInfo();
 
+  const recentEvents = analyticsTracker.getEvents(20).map((event) => {
+    if (event.properties?.stack) {
+      const { stack, ...safeProperties } = event.properties;
+      return { ...event, properties: safeProperties };
+    }
+    return event;
+  });
+
   return new Response(
     JSON.stringify({
       session: sessionInfo,
       metrics,
-      recentEvents: analyticsTracker.getEvents(20),
+      recentEvents,
     }),
     {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    }
+      headers: { "Content-Type": "application/json" },
+    },
   );
 }
