@@ -180,13 +180,15 @@ export default function BRDGenerator() {
               </div>
               <button
                 onClick={() => {
-                  setProjectName('');
-                  setProjectNameInput('');
-                  setStage('clarify');
-                  setMessages([]);
-                  stop();
+                  if (window.confirm('Are you sure you want to change the project? This will clear your current chat.')) {
+                    setProjectName('');
+                    setProjectNameInput('');
+                    setStage('clarify');
+                    setMessages([]);
+                    stop();
+                  }
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus-visible:ring-2 focus-visible:ring-purple-500 rounded px-2 py-1 outline-none"
               >
                 Change Project
               </button>
@@ -246,6 +248,7 @@ export default function BRDGenerator() {
                   type="text"
                   value={input}
                   onChange={handleInputChange}
+                  aria-label="Chat message"
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
