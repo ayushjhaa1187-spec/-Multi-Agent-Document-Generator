@@ -4,11 +4,22 @@ export async function GET() {
   const metrics = analyticsTracker.getMetrics();
   const sessionInfo = analyticsTracker.getSessionInfo();
 
+  const rawEvents = analyticsTracker.getEvents(20);
+
+  // Security Enhancement: Sanitize event properties to prevent leaking stack traces
+  const sanitizedEvents = rawEvents.map(event => {
+    if (event.properties && 'stack' in event.properties) {
+      const { stack, ...safeProperties } = event.properties;
+      return { ...event, properties: safeProperties };
+    }
+    return event;
+  });
+
   return new Response(
     JSON.stringify({
       session: sessionInfo,
       metrics,
-      recentEvents: analyticsTracker.getEvents(20),
+      recentEvents: sanitizedEvents,
     }),
     {
       status: 200,
