@@ -1,0 +1,3 @@
+## 2024-05-23 - Extract and memoize chat message items
+**Learning:** During chat interactions where the `useChat` hook continuously updates the `messages` array, inline message components trigger O(N^2) re-renders across the entire chat history on every chunk received.
+**Action:** Always extract message list items into standalone components wrapped in `React.memo()` when using Vercel AI SDK to prevent unnecessary main thread blocking and preserve smooth scrolling.
