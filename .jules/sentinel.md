@@ -1,0 +1,4 @@
+## 2024-05-25 - Fix information exposure in analytics API
+**Vulnerability:** The `/api/analytics` endpoint exposed recent analytics events which included server-side error stack traces.
+**Learning:** We must sanitize internal observability data at the API response level rather than disabling internal tracking, to prevent information exposure without degrading observability.
+**Prevention:** When sanitizing objects to remove sensitive properties, use object destructuring assignment with the rest operator (e.g., `const { stack, ...safeProperties } = properties;`) as a safe, immutable pattern to omit the property without mutating the original object.
