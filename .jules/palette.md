@@ -1,0 +1,3 @@
+## 2024-05-27 - Auto-resizing Textarea UX and Accessibility
+**Learning:** When using auto-resizing textareas in chat interfaces, `overflow-y-auto` should be used instead of `overflow-hidden` when a `max-height` is set to ensure content remains accessible. Furthermore, wrapping the textarea in a flex container requires `items-end` to prevent adjacent buttons from stretching vertically. Keyboard handlers must check `!e.nativeEvent.isComposing` to prevent premature submission for users of Input Method Editors (IMEs).
+**Action:** Always verify IME compatibility and use `overflow-y-auto` when implementing `max-height` constraints on auto-resizing textareas to maintain accessibility.
