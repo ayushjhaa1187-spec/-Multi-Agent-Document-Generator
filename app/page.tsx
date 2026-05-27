@@ -1,7 +1,8 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import type { Message } from 'ai';
+import { useState, useEffect, memo } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -31,6 +32,37 @@ function CopyButton({ content }: { content: string }) {
     </button>
   );
 }
+
+
+/**
+ * What: Extracts inline message component into a memoized component.
+ * Why: Prevents O(N^2) re-renders during Vercel AI SDK text streaming chunks.
+ * Impact: Reduces rendering operations for historical messages from O(N) to O(1) during streaming.
+ */
+const ChatMessage = memo(({ message, stage }: { message: Message; stage: string }) => {
+  return (
+    <div
+      className={`p-4 sm:p-5 rounded-xl fade-in ${
+        message.role === 'user'
+          ? 'message-user ml-0 sm:ml-8 text-white'
+          : 'message-assistant mr-0 sm:mr-8 text-gray-100'
+      }`}
+    >
+      <div className="flex justify-between items-start mb-2">
+        <div className="font-semibold text-xs sm:text-sm text-gray-300">
+          {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
+        </div>
+        {message.role !== 'user' && (
+          <CopyButton content={message.content} />
+        )}
+      </div>
+      <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+        {message.content}
+      </div>
+    </div>
+  );
+});
+ChatMessage.displayName = 'ChatMessage';
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
@@ -202,26 +234,7 @@ export default function BRDGenerator() {
 
               <div className="space-y-4">
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`p-4 sm:p-5 rounded-xl fade-in ${
-                      message.role === 'user'
-                        ? 'message-user ml-0 sm:ml-8 text-white'
-                        : 'message-assistant mr-0 sm:mr-8 text-gray-100'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-semibold text-xs sm:text-sm text-gray-300">
-                        {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
-                      </div>
-                      {message.role !== 'user' && (
-                        <CopyButton content={message.content} />
-                      )}
-                    </div>
-                    <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
-                      {message.content}
-                    </div>
-                  </div>
+                  <ChatMessage key={message.id} message={message} stage={stage} />
                 ))}
 
                 {isLoading && (
