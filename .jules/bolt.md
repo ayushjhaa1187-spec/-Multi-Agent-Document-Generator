@@ -1,0 +1,3 @@
+## 2025-05-30 - Optimize Chat Message Re-renders
+**Learning:** Vercel AI SDK's text streaming updates the 'messages' array continuously, causing full re-renders of the chat list for every chunk. Since Next.js functional components lack native granular list rendering, inline mapped messages trigger O(N²) operations (N messages * N chunks).
+**Action:** Always extract items mapped from stream arrays (like chat messages) into standalone `React.memo()` components. Define them outside the parent to preserve the reference and include explicit `displayName` for Next.js ESLint compliance.
