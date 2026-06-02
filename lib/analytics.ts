@@ -140,7 +140,14 @@ class AnalyticsTracker {
    * Get events for export
    */
   getEvents(limit: number = 100) {
-    return this.events.slice(-limit);
+    return this.events.slice(-limit).map(event => {
+      if (event.properties && 'stack' in event.properties) {
+        // Security Fix: Sanitize analytics events to prevent stack trace leakage
+        const { stack, ...safeProperties } = event.properties;
+        return { ...event, properties: safeProperties };
+      }
+      return event;
+    });
   }
 
   /**
