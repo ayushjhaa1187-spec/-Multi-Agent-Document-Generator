@@ -1,0 +1,4 @@
+## 2024-06-03 - Prevent stack trace exposure in public analytics endpoint
+**Vulnerability:** The `/api/analytics` endpoint publicly exposed stack traces by directly exporting the raw `events` array, which included `stack` properties from `trackError` events.
+**Learning:** Returning unsanitized analytics events in endpoints exposes internal execution paths. When fixing this, object destructuring (`const { stack, ...safeProps } = event.properties`) should be used to strip sensitive fields without mutating the original object state.
+**Prevention:** Always sanitize objects retrieved from internal analytics arrays before returning them in public APIs. Ensure proper destructuring is used instead of the `delete` keyword.
