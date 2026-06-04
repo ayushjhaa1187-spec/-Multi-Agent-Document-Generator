@@ -1,0 +1,3 @@
+## 2024-06-04 - Prevent O(N²) Re-renders in AI Streaming
+**Learning:** When using Vercel AI SDK text streaming, inline components mapped over the `messages` array trigger O(N²) re-renders on every chunk. The parent component re-renders every time a chunk is received, causing all previously completed messages to re-render.
+**Action:** Always extract message list items into standalone components wrapped in `React.memo()` (defined outside the parent) to ensure only the actively streaming message re-renders.
