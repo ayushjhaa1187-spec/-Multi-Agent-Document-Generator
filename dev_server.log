@@ -2,7 +2,7 @@
 > multi-agent-brd-generator@1.0.0 dev
 > next dev
 
-   ▲ Next.js 15.5.12
+   ▲ Next.js 15.5.19
    - Local:        http://localhost:3000
    - Network:      http://192.168.0.2:3000
    - Experiments (use with caution):
@@ -12,6 +12,47 @@
    Using tsconfig file: ./tsconfig.json
  ✓ Ready in 2.1s
  ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Compiled / in 8.4s (747 modules)
+ GET / 200 in 9442ms
+ ○ Compiling /api/chat ...
+ ✓ Compiled /api/chat in 1587ms (800 modules)
+[Analytics] Session started: session_1780606688040_27wes67ge
+[Analytics] Event tracked: session_start { userAgent: 'Node.js/22' }
+prisma:error
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   |
+ 6 |   provider = "postgresql"
+ 7 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+Database connection failed: Error [PrismaClientInitializationError]:
+Invalid `prisma.$queryRaw()` invocation:
+
+
+error: Environment variable not found: DATABASE_URL.
+  -->  schema.prisma:7
+   |
+ 6 |   provider = "postgresql"
+ 7 |   url      = env("DATABASE_URL")
+   |
+
+Validation Error Count: 1
+    at <unknown> (-->  schema.prisma:7)
+    at async POST (app/api/chat/route.ts:59:7)
+  57 |
+  58 |     try {
+> 59 |       await prisma.$queryRaw`SELECT 1`;
+     |       ^
+  60 |     } catch (dbError) {
+  61 |       console.error('Database connection failed:', dbError);
+  62 |       recordMetric('/api/chat', Date.now() - startTime, 503); {
+  clientVersion: '6.19.3',
+  errorCode: undefined,
+  retryable: undefined
+}
+ POST /api/chat 503 in 2509ms
