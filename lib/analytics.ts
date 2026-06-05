@@ -112,7 +112,9 @@ class AnalyticsTracker {
     const errorMessage = error instanceof Error ? error.message : String(error);
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
+      ...(process.env.NODE_ENV !== 'production' && {
+        stack: error instanceof Error ? error.stack : undefined,
+      }),
       ...context,
     });
   }
