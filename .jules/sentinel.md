@@ -1,0 +1,4 @@
+## 2026-06-05 - Fix error message stack trace leakage
+**Vulnerability:** Error message stack traces were logged unconditionally in `lib/analytics.ts`, which could leak sensitive environment variables, absolute path structures, and application internals to error reporting dashboards and logs, which could then potentially be visible to unintended parties.
+**Learning:** Even though error logs might seem internal, storing stack traces in analytics services without environment scoping can inadvertently spread sensitive internal structure data off-site or beyond necessary boundaries.
+**Prevention:** Always restrict verbose error properties, such as stack traces, to non-production environments (`process.env.NODE_ENV !== 'production'`) using an environment check before logging or returning them in APIs.
