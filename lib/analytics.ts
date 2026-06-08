@@ -140,7 +140,18 @@ class AnalyticsTracker {
    * Get events for export
    */
   getEvents(limit: number = 100) {
-    return this.events.slice(-limit);
+    return this.events.slice(-limit).map(event => {
+      // Create a shallow copy of properties if they exist
+      const safeProperties = event.properties ? { ...event.properties } : undefined;
+
+      // Remove stack trace if it exists in properties
+      if (safeProperties && 'stack' in safeProperties) {
+        const { stack, ...rest } = safeProperties;
+        return { ...event, properties: rest };
+      }
+
+      return event;
+    });
   }
 
   /**
