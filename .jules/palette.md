@@ -1,0 +1,3 @@
+## 2024-06-10 - Adding Confirmations to Destructive UI Actions and Improving Form Accessibility
+**Learning:** Replacing existing data or clearing state (like chat history) without explicit user confirmation leads to accidental data loss. Furthermore, dynamically rendered error messages are easily missed by screen readers unless ARIA alert roles are added.
+**Action:** Always wrap state-clearing UI actions in a native `window.confirm` dialog to preserve user context. Conditionally rendered dynamic error messages should include `role="alert"` and `aria-live="assertive"`. Finally, form labels must explicitly link to their input via `htmlFor`.
