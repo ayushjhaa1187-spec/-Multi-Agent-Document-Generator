@@ -1,0 +1,4 @@
+## 2026-06-11 - Information Leakage in Analytics Error Tracking
+**Vulnerability:** The analytics tracker (`lib/analytics.ts`) records raw error stack traces when tracking errors (`this.trackEvent('error', { stack: error.stack })`). These events are then exposed publicly via the unauthenticated `/api/analytics` endpoint.
+**Learning:** Exposing detailed error stack traces in a public API is a critical security vulnerability as it reveals internal application structure, file paths, and potentially sensitive environment variables or configurations to anyone who can reach the endpoint.
+**Prevention:** Avoid logging complete stack traces in environments where the logs or analytics might be exposed publicly. If stack traces are required for debugging, ensure the endpoint exposing them is strictly authenticated and authorized. For public endpoints, strip sensitive fields like stack traces before returning the data.
