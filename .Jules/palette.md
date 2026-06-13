@@ -1,3 +1,3 @@
-## 2024-05-23 - Dynamic Character Counter
-**Learning:** Combining `aria-describedby` with a visual character counter improves form accessibility significantly without cluttering the UI. Users with screen readers can check the limit, while sighted users get immediate feedback.
-**Action:** For all limited text inputs, implement a character counter and link it via `aria-describedby`.
+## 2024-06-13 - Add Window Confirm and ARIA Alerts to Project Flow
+**Learning:** Destructive actions like changing a project that clears the current chat messages need explicit confirmation to prevent accidental data loss. Furthermore, dynamic error messages must immediately be announced by screen readers.
+**Action:** Always wrap state-clearing actions in `window.confirm` and apply `role="alert"` and `aria-live="assertive"` to dynamic error components.

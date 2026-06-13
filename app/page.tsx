@@ -160,7 +160,7 @@ export default function BRDGenerator() {
 
         {/* Error Display */}
         {error && (
-          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in" role="alert" aria-live="assertive">
             <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
               {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
             </p>
@@ -180,11 +180,13 @@ export default function BRDGenerator() {
               </div>
               <button
                 onClick={() => {
-                  setProjectName('');
-                  setProjectNameInput('');
-                  setStage('clarify');
-                  setMessages([]);
-                  stop();
+                  if (window.confirm('Are you sure you want to change projects? This will clear your current progress.')) {
+                    setProjectName('');
+                    setProjectNameInput('');
+                    setStage('clarify');
+                    setMessages([]);
+                    stop();
+                  }
                 }}
                 className="text-gray-400 hover:text-white text-sm transition-colors"
               >
