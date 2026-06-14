@@ -1,3 +1,3 @@
-## 2024-05-23 - Dynamic Character Counter
-**Learning:** Combining `aria-describedby` with a visual character counter improves form accessibility significantly without cluttering the UI. Users with screen readers can check the limit, while sighted users get immediate feedback.
-**Action:** For all limited text inputs, implement a character counter and link it via `aria-describedby`.
+## 2024-06-14 - Prevent Accidental Chat History Loss
+**Learning:** Changing projects in a chat interface immediately wipes the current context without warning. This is a severe UX issue because users can accidentally lose extensive requirement documentation by clicking a vaguely-labeled "Change Project" button. Additionally, dynamic chat inputs need explicit ARIA labels because their purpose changes between conversation stages ('clarify' vs 'generate').
+**Action:** Always wrap state-clearing actions in a native `window.confirm` dialog to preserve user context, and ensure dynamic inputs have matching dynamic `aria-label`s for screen reader users.
