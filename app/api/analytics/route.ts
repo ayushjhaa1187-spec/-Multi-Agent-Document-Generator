@@ -8,7 +8,13 @@ export async function GET() {
     JSON.stringify({
       session: sessionInfo,
       metrics,
-      recentEvents: analyticsTracker.getEvents(20),
+      recentEvents: analyticsTracker.getEvents(20).map(event => {
+        if (event.properties && 'stack' in event.properties) {
+          const { stack, ...safeProperties } = event.properties;
+          return { ...event, properties: safeProperties };
+        }
+        return event;
+      }),
     }),
     {
       status: 200,
