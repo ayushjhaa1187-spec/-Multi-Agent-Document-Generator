@@ -1,0 +1,4 @@
+## 2024-06-18 - Prevent Stack Trace Leakage in Analytics API
+**Vulnerability:** The analytics tracker sometimes logs error stack traces (`error.stack`). The `/api/analytics/route.ts` endpoint previously exposed `recentEvents` directly as returned by `analyticsTracker.getEvents(20)`. This could leak detailed internal stack traces to the frontend or an attacker.
+**Learning:** Returning objects containing internally logged data directly to API responses can inadvertently expose sensitive error information if the data shape changes or encompasses errors. Always sanitize internal structures before serializing them for the client.
+**Prevention:** Explicitly strip sensitive properties like `stack` from `properties` when returning events from the API. Use object destructuring to remove these fields without mutating the original object.
