@@ -179,12 +179,15 @@ export default function BRDGenerator() {
                 <p className="text-white font-semibold text-lg sm:text-xl">{projectName}</p>
               </div>
               <button
+                aria-label="Change project and clear chat history"
                 onClick={() => {
-                  setProjectName('');
-                  setProjectNameInput('');
-                  setStage('clarify');
-                  setMessages([]);
-                  stop();
+                  if (window.confirm('Are you sure you want to change projects? This will clear your current chat history.')) {
+                    setProjectName('');
+                    setProjectNameInput('');
+                    setStage('clarify');
+                    setMessages([]);
+                    stop();
+                  }
                 }}
                 className="text-gray-400 hover:text-white text-sm transition-colors"
               >
