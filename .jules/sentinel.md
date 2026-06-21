@@ -1,0 +1,5 @@
+## 2024-06-22 - Prevent Stack Trace Leakage in Analytics
+
+**Vulnerability:** The `AnalyticsTracker.trackError` method in `lib/analytics.ts` includes `error.stack` in the tracked event properties. If this analytics data is exposed through an endpoint like `/api/analytics/route.ts` (which returns `recentEvents: analyticsTracker.getEvents(20)`), stack traces revealing internal system details, paths, and potentially secrets would be leaked to anyone accessing that endpoint.
+**Learning:** Automatically serializing error objects or logging full stack traces in tracking tools that are exposed via public or unauthenticated admin endpoints creates a medium/high severity information disclosure vulnerability. The intention to debug errors must be balanced against the risk of exposing internals.
+**Prevention:** Always omit the `stack` property when recording errors in a system where those errors may be fetched by an API endpoint, or explicitly strip it out before serialization. Send stack traces only to dedicated, secure observability platforms, not to internal arrays exposed via API.
