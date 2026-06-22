@@ -112,7 +112,7 @@ class AnalyticsTracker {
     const errorMessage = error instanceof Error ? error.message : String(error);
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
+      // stack: error instanceof Error ? error.stack : undefined, // Removed to prevent stack trace leaks
       ...context,
     });
   }
@@ -140,7 +140,13 @@ class AnalyticsTracker {
    * Get events for export
    */
   getEvents(limit: number = 100) {
-    return this.events.slice(-limit);
+    return this.events.slice(-limit).map(event => {
+      if (event.properties && 'stack' in event.properties) {
+        const { stack, ...safeProperties } = event.properties;
+        return { ...event, properties: safeProperties };
+      }
+      return event;
+    });
   }
 
   /**
