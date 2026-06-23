@@ -1,9 +1,12 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
-function CopyButton({ content }: { content: string }) {
+// ⚡ Bolt Performance Optimization:
+// Wrapped CopyButton in React.memo to prevent unnecessary re-renders when the parent chat list updates.
+// Expected Impact: Reduces main thread blocking by avoiding rendering unchanged copy buttons during AI streaming.
+const CopyButton = memo(({ content }: { content: string }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -30,7 +33,39 @@ function CopyButton({ content }: { content: string }) {
       )}
     </button>
   );
-}
+});
+
+CopyButton.displayName = 'CopyButton';
+
+
+// ⚡ Bolt Performance Optimization:
+// Extracted inline message rendering to MessageItem and wrapped in React.memo.
+// Expected Impact: Prevents re-rendering the entire chat history (O(n)) on every input change or streaming token update, dropping it to O(1) for existing messages.
+const MessageItem = memo(({ message, stage }: { message: { id: string, role: string, content: string }, stage: string }) => {
+  return (
+    <div
+      className={`p-4 sm:p-5 rounded-xl fade-in ${
+        message.role === 'user'
+          ? 'message-user ml-0 sm:ml-8 text-white'
+          : 'message-assistant mr-0 sm:mr-8 text-gray-100'
+      }`}
+    >
+      <div className="flex justify-between items-start mb-2">
+        <div className="font-semibold text-xs sm:text-sm text-gray-300">
+          {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
+        </div>
+        {message.role !== 'user' && (
+          <CopyButton content={message.content} />
+        )}
+      </div>
+      <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+        {message.content}
+      </div>
+    </div>
+  );
+});
+
+MessageItem.displayName = 'MessageItem';
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
@@ -202,26 +237,7 @@ export default function BRDGenerator() {
 
               <div className="space-y-4">
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`p-4 sm:p-5 rounded-xl fade-in ${
-                      message.role === 'user'
-                        ? 'message-user ml-0 sm:ml-8 text-white'
-                        : 'message-assistant mr-0 sm:mr-8 text-gray-100'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-semibold text-xs sm:text-sm text-gray-300">
-                        {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
-                      </div>
-                      {message.role !== 'user' && (
-                        <CopyButton content={message.content} />
-                      )}
-                    </div>
-                    <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
-                      {message.content}
-                    </div>
-                  </div>
+                  <MessageItem key={message.id} message={message} stage={stage} />
                 ))}
 
                 {isLoading && (
