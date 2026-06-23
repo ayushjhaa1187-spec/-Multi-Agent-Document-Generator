@@ -230,7 +230,8 @@ export default function BRDGenerator() {
                     <span>Generating response...</span>
                     <button
                       onClick={() => stop()}
-                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
+                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:outline-none"
+                      aria-label="Stop generating response"
                     >
                       Stop
                     </button>
