@@ -180,13 +180,16 @@ export default function BRDGenerator() {
               </div>
               <button
                 onClick={() => {
-                  setProjectName('');
-                  setProjectNameInput('');
-                  setStage('clarify');
-                  setMessages([]);
-                  stop();
+                  if (window.confirm('Are you sure you want to change projects? This will clear your current progress.')) {
+                    setProjectName('');
+                    setProjectNameInput('');
+                    setStage('clarify');
+                    setMessages([]);
+                    stop();
+                  }
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                aria-label="Change project and clear current progress"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus-visible:ring-2 focus-visible:ring-purple-500 rounded px-2 py-1"
               >
                 Change Project
               </button>
