@@ -1,0 +1,4 @@
+## 2024-06-25 - Prevent Stack Trace Leakage in Analytics Event Export
+**Vulnerability:** The analytics tracker logged errors including their raw stack traces (`event.properties.stack`), and exposed them directly via the public `/api/analytics` endpoint without stripping sensitive server internals.
+**Learning:** Even internal logging mechanisms can unintentionally expose system information if their stored data is made accessible through unauthenticated or loosely controlled API endpoints. Destructuring with the rest operator provides a robust way to strip sensitive fields before export.
+**Prevention:** Always sanitize event properties immediately before exporting them from internal trackers to external consumers. Never assume that internally logged data is strictly safe for external consumption.
