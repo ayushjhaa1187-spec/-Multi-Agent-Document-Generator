@@ -1,0 +1,3 @@
+## 2024-06-25 - Avoid explicit Prisma SELECT 1 checks on every request
+**Learning:** In Prisma-based Next.js applications, adding an explicit database health check (e.g., `await prisma.$queryRaw\`SELECT 1\``) on every API request is a common anti-pattern. Prisma automatically manages its own robust connection pool, making these explicit manual pings redundant. This adds unnecessary network latency (e.g., 10-50ms+ per request) to critical hot paths like `/api/chat`.
+**Action:** Remove explicit database pings on every request. Rely on natural query failures to handle unreachable database states, allowing Prisma's connection pool to manage health transparently.
