@@ -160,7 +160,7 @@ export default function BRDGenerator() {
 
         {/* Error Display */}
         {error && (
-          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+          <div role="alert" aria-live="assertive" className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
             <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
               {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
             </p>
