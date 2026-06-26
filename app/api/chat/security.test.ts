@@ -62,4 +62,24 @@ describe('POST /api/chat - Security Validation', () => {
     const data = await res.json();
     assert.strictEqual(data.error, 'Invalid messages format');
   });
+
+  it('should enforce rate limiting after MAX_REQUESTS', async () => {
+    const promises = [];
+    // 10 requests should succeed (or return 400 for bad input)
+    // The 11th should return 429
+    for (let i = 0; i < 11; i++) {
+      const req = new Request('http://localhost/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-forwarded-for': '192.168.1.1' },
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'test' }], projectName: 'test project' })
+      });
+      promises.push(POST(req));
+    }
+
+    const responses = await Promise.all(promises);
+
+    // Check that at least one response was 429
+    const hasRateLimit = responses.some(r => r.status === 429);
+    assert.strictEqual(hasRateLimit, true);
+  });
 });

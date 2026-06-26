@@ -7,11 +7,44 @@ import { recordMetric } from '@/lib/performance';
 import { analyticsTracker } from '@/lib/analytics';
 import { cacheManager } from '@/lib/cache';
 
+// In-memory rate limiting map for basic protection
+const rateLimit = new Map<string, { count: number; timestamp: number }>();
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
+const MAX_REQUESTS = 10; // Max requests per window
+
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
   const startTime = Date.now();
   try {
+    // Basic IP-based rate limiting
+    const ip = req.headers.get('x-forwarded-for') || 'unknown';
+    const now = Date.now();
+    const userLimit = rateLimit.get(ip);
+
+    if (userLimit && now - userLimit.timestamp < RATE_LIMIT_WINDOW) {
+      if (userLimit.count >= MAX_REQUESTS) {
+        recordMetric('/api/chat', Date.now() - startTime, 429);
+        analyticsTracker.trackApiRequest('/api/chat', Date.now() - startTime, 429, 'Rate limit exceeded');
+        return new Response(
+          JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+          { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': '60' } }
+        );
+      }
+      userLimit.count++;
+    } else {
+      rateLimit.set(ip, { count: 1, timestamp: now });
+    }
+
+    // Clean up old entries periodically
+    if (Math.random() < 0.1) {
+      for (const [key, value] of rateLimit.entries()) {
+        if (now - value.timestamp >= RATE_LIMIT_WINDOW) {
+          rateLimit.delete(key);
+        }
+      }
+    }
+
     const { messages, projectName } = await req.json();
 
     // Validate messages array shape (Security Enhancement: Input Validation)
