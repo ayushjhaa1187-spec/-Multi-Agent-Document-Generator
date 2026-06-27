@@ -180,11 +180,13 @@ export default function BRDGenerator() {
               </div>
               <button
                 onClick={() => {
-                  setProjectName('');
-                  setProjectNameInput('');
-                  setStage('clarify');
-                  setMessages([]);
-                  stop();
+                  if (window.confirm("Are you sure you want to change the project? This will clear the chat history.")) {
+                    setProjectName('');
+                    setProjectNameInput('');
+                    setStage('clarify');
+                    setMessages([]);
+                    stop();
+                  }
                 }}
                 className="text-gray-400 hover:text-white text-sm transition-colors"
               >
