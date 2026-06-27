@@ -1,0 +1,3 @@
+## 2025-02-28 - Removed unnecessary Database Health Checks from API requests
+**Learning:** In Prisma-based applications, placing explicit database health checks (e.g., \`await prisma.$queryRaw\\\`SELECT 1\\\`\`) on every API request is a common anti-pattern that adds unnecessary network latency (10-50ms+ per request). Prisma automatically manages its own robust connection pool and will reconnect as needed.
+**Action:** Do not use \`SELECT 1\` pings before database operations in API routes. Instead, allow queries to execute and naturally fail if the database is unreachable to reduce unnecessary latency and overhead per request.
