@@ -1,0 +1,4 @@
+## 2025-02-24 - Prevent Error Stack Trace Leaks
+**Vulnerability:** The analytics tracker included full error stack traces in events via `stack: error instanceof Error ? error.stack : undefined`. These events were then directly exposed via the `/api/analytics` endpoint which returned `analyticsTracker.getEvents(20)`. This could leak sensitive internal implementation details (e.g. file paths, database structure details, inner mechanisms) to any user who hit the analytics API route.
+**Learning:** Even internal analytics tools must be sanitized if their data is exposed to users or less-privileged clients. Returning internal error objects unfiltered is a common anti-pattern that violates "Fail securely - errors should not expose sensitive data."
+**Prevention:** Always filter or omit the `stack` trace property when logging errors that might be visible outside secure, server-only logging boundaries.
