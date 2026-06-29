@@ -1,0 +1,4 @@
+## 2024-05-27 - [Information Leakage: Analytics Event Stack Traces]
+**Vulnerability:** The analytics tracking system in `lib/analytics.ts` exposed complete, unredacted error stack traces whenever tracking server-side or unhandled application errors (`analyticsTracker.trackError(error)`).
+**Learning:** Even internal logging or analytics endpoints can inadvertently leak sensitive system architecture, filesystem paths, and dependency structures if raw error objects are destructured without sanitization. While analytics are meant for observation, capturing stack traces could expose internal application logic or environment details when an attacker manipulates the application to throw an exception.
+**Prevention:** Sanitize error objects explicitly before logging or sending them to internal trackers or external analytics services, strictly omitting `.stack` properties while retaining the actionable `.message` component.
