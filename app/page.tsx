@@ -19,7 +19,7 @@ function CopyButton({ content }: { content: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all"
+      className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
       aria-label={copied ? "Copied" : "Copy to clipboard"}
       title={copied ? "Copied!" : "Copy content"}
     >
@@ -186,7 +186,7 @@ export default function BRDGenerator() {
                   setMessages([]);
                   stop();
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded-md px-2 py-1"
               >
                 Change Project
               </button>
@@ -230,7 +230,7 @@ export default function BRDGenerator() {
                     <span>Generating response...</span>
                     <button
                       onClick={() => stop()}
-                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
+                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                     >
                       Stop
                     </button>
