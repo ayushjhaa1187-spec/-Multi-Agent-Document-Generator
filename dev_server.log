@@ -1,17 +1,12 @@
 
-> multi-agent-brd-generator@1.0.0 dev
-> next dev
+> multi-agent-brd-generator@1.0.0 start
+> next start
 
    ▲ Next.js 15.5.12
    - Local:        http://localhost:3000
    - Network:      http://192.168.0.2:3000
-   - Experiments (use with caution):
-     · serverActions
 
  ✓ Starting...
-   Using tsconfig file: ./tsconfig.json
- ✓ Ready in 2.1s
- ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Ready in 490ms
+[Analytics] Session started: session_1783197691015_gqw7m20it
+[Analytics] Event tracked: session_start { userAgent: 'Node.js/22' }
