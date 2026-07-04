@@ -150,6 +150,7 @@ export default function BRDGenerator() {
                 type="submit"
                 disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
                 aria-disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
+                title={projectNameInput.trim().length === 0 ? "Enter a project name to continue" : projectNameInput.trim().length < 3 ? "Project name must be at least 3 characters" : projectNameInput.trim().length > 100 ? "Project name cannot exceed 100 characters" : ""}
                 className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed disabled:opacity-60 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
               >
                 Continue to Project Details →
@@ -180,13 +181,16 @@ export default function BRDGenerator() {
               </div>
               <button
                 onClick={() => {
-                  setProjectName('');
-                  setProjectNameInput('');
-                  setStage('clarify');
-                  setMessages([]);
-                  stop();
+                  if (window.confirm('Are you sure you want to change project? Current progress will be lost.')) {
+                    setProjectName('');
+                    setProjectNameInput('');
+                    setStage('clarify');
+                    setMessages([]);
+                    stop();
+                  }
                 }}
                 className="text-gray-400 hover:text-white text-sm transition-colors"
+                aria-label="Change Project (will reset current progress)"
               >
                 Change Project
               </button>
@@ -249,10 +253,13 @@ export default function BRDGenerator() {
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
+                  aria-label={stage === 'clarify' ? 'Describe your requirements' : 'Provide additional implementation details'}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
+                  aria-disabled={isLoading || !input.trim()}
+                  title={!input.trim() ? "Type a message to send" : ""}
                   className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
                 >
                   {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
