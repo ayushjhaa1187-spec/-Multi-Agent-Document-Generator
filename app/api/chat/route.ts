@@ -55,16 +55,9 @@ export async function POST(req: Request) {
       );
     }
 
-    try {
-      await prisma.$queryRaw`SELECT 1`;
-    } catch (dbError) {
-      console.error('Database connection failed:', dbError);
-      recordMetric('/api/chat', Date.now() - startTime, 503);
-      return new Response(
-        JSON.stringify({ error: 'Database connection failed' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
+    // Optimization: Removed redundant explicit database health check (SELECT 1).
+    // Prisma automatically manages its connection pool. Relying on natural query failures
+    // avoids adding 10-50ms+ of unnecessary network latency to every request.
 
     // Run planner to decide flow; keep prompt identical
     const plannerResult = await streamText({
