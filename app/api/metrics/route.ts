@@ -1,6 +1,15 @@
 import { getAllMetrics, getAverageResponseTime } from '@/lib/performance';
+import { ENV } from '@/lib/env';
 
-export async function GET() {
+export async function GET(req: Request) {
+  // SECURITY: Require authentication for sensitive admin endpoint
+  const authHeader = req.headers.get('authorization');
+  if (!ENV.ADMIN_SECRET || !authHeader || authHeader !== `Bearer ${ENV.ADMIN_SECRET}`) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   const metrics = getAllMetrics();
   const avg = getAverageResponseTime('/api/chat');
 
