@@ -1,0 +1,3 @@
+## 2025-07-07 - Optimization: Remove Redundant Database Ping
+**Learning:** Explicit database health checks (like `SELECT 1`) on every API request in Prisma applications are redundant and create unnecessary network overhead (10-50ms+ per request). Prisma efficiently manages its own connection pool, making manual polling an anti-pattern that slows down API response times without adding meaningful reliability.
+**Action:** Rely on natural query execution and standard connection pooling instead of explicit pre-query health checks. Handle actual query failures gracefully rather than trying to preempt them with manual connection pings.
