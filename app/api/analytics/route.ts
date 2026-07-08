@@ -1,6 +1,14 @@
 import { analyticsTracker } from '@/lib/analytics';
+import { ENV } from '@/lib/env';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const authHeader = request.headers.get('x-admin-secret');
+  if (!ENV.ADMIN_SECRET || authHeader !== ENV.ADMIN_SECRET) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   const metrics = analyticsTracker.getMetrics();
   const sessionInfo = analyticsTracker.getSessionInfo();
 
