@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="projectName" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="projectName"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -186,6 +187,7 @@ export default function BRDGenerator() {
                   setMessages([]);
                   stop();
                 }}
+                aria-label="Change current project"
                 className="text-gray-400 hover:text-white text-sm transition-colors"
               >
                 Change Project
@@ -230,6 +232,7 @@ export default function BRDGenerator() {
                     <span>Generating response...</span>
                     <button
                       onClick={() => stop()}
+                      aria-label="Stop generating response"
                       className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
                     >
                       Stop
@@ -242,7 +245,9 @@ export default function BRDGenerator() {
             {/* Input Form */}
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
+                <label htmlFor="messageInput" className="sr-only">Message</label>
                 <input
+                  id="messageInput"
                   type="text"
                   value={input}
                   onChange={handleInputChange}
