@@ -1,6 +1,12 @@
+import { ENV } from '@/lib/env';
 import { getAllMetrics, getAverageResponseTime } from '@/lib/performance';
 
-export async function GET() {
+export async function GET(request: Request) {
+  // Security: Require admin authentication to prevent information disclosure
+  const authHeader = request.headers.get('authorization');
+  if (!ENV.ADMIN_SECRET || authHeader !== `Bearer ${ENV.ADMIN_SECRET}`) {
+    return new Response('Unauthorized', { status: 401 });
+  }
   const metrics = getAllMetrics();
   const avg = getAverageResponseTime('/api/chat');
 
