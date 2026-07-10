@@ -249,6 +249,8 @@ export default function BRDGenerator() {
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
+                  maxLength={500}
+                  aria-describedby="chat-input-counter"
                 />
                 <button
                   type="submit"
@@ -257,6 +259,16 @@ export default function BRDGenerator() {
                 >
                   {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
                 </button>
+              </div>
+              <div className="flex justify-end mt-1">
+                <span
+                  id="chat-input-counter"
+                  className={`text-xs sm:text-sm font-medium transition-colors duration-200 ${
+                    input.length >= 450 ? 'text-orange-400' : 'text-gray-500'
+                  }`}
+                >
+                  {input.length}/500
+                </span>
               </div>
 
               {/* Stage Indicator */}
