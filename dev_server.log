@@ -1,8 +1,8 @@
 
-> multi-agent-brd-generator@1.0.0 dev
+> multi-agent-brd-generator@1.0.0 dev /app
 > next dev
 
-   ▲ Next.js 15.5.12
+   ▲ Next.js 15.5.20
    - Local:        http://localhost:3000
    - Network:      http://192.168.0.2:3000
    - Experiments (use with caution):
@@ -10,8 +10,58 @@
 
  ✓ Starting...
    Using tsconfig file: ./tsconfig.json
- ✓ Ready in 2.1s
+ ✓ Ready in 2.4s
  ○ Compiling / ...
- ✓ Compiled / in 8.8s (752 modules)
- GET / 200 in 10458ms
- GET / 200 in 116ms
+ ✓ Compiled / in 8.4s (747 modules)
+ GET / 200 in 9373ms
+ ○ Compiling /api/chat ...
+ ✓ Compiled /api/chat in 1579ms (800 modules)
+[Analytics] Session started: session_1783975547382_kjv5oz98a
+[Analytics] Event tracked: session_start { userAgent: 'Node.js/22' }
+API error: SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at POST (app/api/chat/route.ts:15:49)
+  13 |   const startTime = Date.now();
+  14 |   try {
+> 15 |     const { messages, projectName } = await req.json();
+     |                                                 ^
+  16 |
+  17 |     // Validate messages array shape (Security Enhancement: Input Validation)
+  18 |     const messagesValid =
+[Analytics] Event tracked: error {
+  error: 'Unexpected end of JSON input',
+  stack: 'SyntaxError: Unexpected end of JSON input\n' +
+    '    at JSON.parse (<anonymous>)\n' +
+    '    at parseJSONFromBytes (node:internal/deps/undici/undici:5852:19)\n' +
+    '    at successSteps (node:internal/deps/undici/undici:5833:27)\n' +
+    '    at consumeBody (node:internal/deps/undici/undici:5839:9)\n' +
+    '    at NextRequest.json (node:internal/deps/undici/undici:5779:18)\n' +
+    '    at POST (webpack-internal:///(rsc)/./app/api/chat/route.ts:24:53)\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:80:14)\n' +
+    '    at AppRouteRouteModule.do (/app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:38775)\n' +
+    '    at /app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:48915\n' +
+    '    at /app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/lib/trace/tracer.js:184:36\n' +
+    '    at NoopContextManager.with (/app/node_modules/.pnpm/@opentelemetry+api@1.9.0/node_modules/@opentelemetry/api/build/src/context/NoopContextManager.js:25:19)\n' +
+    '    at ContextAPI.with (/app/node_modules/.pnpm/@opentelemetry+api@1.9.0/node_modules/@opentelemetry/api/build/src/api/context.js:60:46)\n' +
+    '    at NoopTracer.startActiveSpan (/app/node_modules/.pnpm/@opentelemetry+api@1.9.0/node_modules/@opentelemetry/api/build/src/trace/NoopTracer.js:65:31)\n' +
+    '    at ProxyTracer.startActiveSpan (/app/node_modules/.pnpm/@opentelemetry+api@1.9.0/node_modules/@opentelemetry/api/build/src/trace/ProxyTracer.js:36:24)\n' +
+    '    at /app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/lib/trace/tracer.js:153:103\n' +
+    '    at NoopContextManager.with (/app/node_modules/.pnpm/@opentelemetry+api@1.9.0/node_modules/@opentelemetry/api/build/src/context/NoopContextManager.js:25:19)\n' +
+    '    at ContextAPI.with (/app/node_modules/.pnpm/@opentelemetry+api@1.9.0/node_modules/@opentelemetry/api/build/src/api/context.js:60:46)\n' +
+    '    at NextTracerImpl.trace (/app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/server/lib/trace/tracer.js:153:28)\n' +
+    '    at /app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:48760\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at /app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:46097\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at /app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:46054\n' +
+    '    at AsyncLocalStorage.run (node:internal/async_local_storage/async_hooks:91:14)\n' +
+    '    at AppRouteRouteModule.handle (/app/node_modules/.pnpm/next@15.5.20_@opentelemetry+api@1.9.0_react-dom@19.2.7_react@19.2.7__react@19.2.7/node_modules/next/dist/compiled/next-server/app-route.runtime.dev.js:5:46008)',
+  endpoint: '/api/chat',
+  duration: 1
+}
+[Analytics] Event tracked: api_request {
+  endpoint: '/api/chat',
+  duration: 1,
+  status: 500,
+  error: 'Internal server error'
+}
