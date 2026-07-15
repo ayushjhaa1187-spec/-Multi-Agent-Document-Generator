@@ -11,4 +11,5 @@ export const ENV = {
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
   DATABASE_URL: process.env.DATABASE_URL || '',
   NODE_ENV: process.env.NODE_ENV || 'development',
+  ADMIN_SECRET: process.env.ADMIN_SECRET || '',
 };
