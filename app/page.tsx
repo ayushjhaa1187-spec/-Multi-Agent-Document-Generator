@@ -19,7 +19,7 @@ function CopyButton({ content }: { content: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all"
+      className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
       aria-label={copied ? "Copied" : "Copy to clipboard"}
       title={copied ? "Copied!" : "Copy content"}
     >
@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="projectName" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="projectName"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -186,7 +187,7 @@ export default function BRDGenerator() {
                   setMessages([]);
                   stop();
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none rounded"
               >
                 Change Project
               </button>
@@ -230,7 +231,7 @@ export default function BRDGenerator() {
                     <span>Generating response...</span>
                     <button
                       onClick={() => stop()}
-                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
+                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:outline-none"
                     >
                       Stop
                     </button>
@@ -243,6 +244,7 @@ export default function BRDGenerator() {
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
                 <input
+                  aria-label="Chat input message"
                   type="text"
                   value={input}
                   onChange={handleInputChange}
