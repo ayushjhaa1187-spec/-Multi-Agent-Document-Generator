@@ -112,7 +112,8 @@ class AnalyticsTracker {
     const errorMessage = error instanceof Error ? error.message : String(error);
     this.trackEvent('error', {
       error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
+      // Security: Do not expose stack traces in analytics events
+      // stack: error instanceof Error ? error.stack : undefined,
       ...context,
     });
   }
@@ -140,7 +141,14 @@ class AnalyticsTracker {
    * Get events for export
    */
   getEvents(limit: number = 100) {
-    return this.events.slice(-limit);
+    // Security: Sanitize events before exposing them via API
+    return this.events.slice(-limit).map((event) => {
+      if (event.event === 'error' && event.properties?.stack) {
+        const { stack, ...safeProperties } = event.properties;
+        return { ...event, properties: safeProperties };
+      }
+      return event;
+    });
   }
 
   /**
