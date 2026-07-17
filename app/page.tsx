@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="project-name" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="project-name"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -187,6 +188,7 @@ export default function BRDGenerator() {
                   stop();
                 }}
                 className="text-gray-400 hover:text-white text-sm transition-colors"
+                aria-label="Change project"
               >
                 Change Project
               </button>
@@ -231,6 +233,7 @@ export default function BRDGenerator() {
                     <button
                       onClick={() => stop()}
                       className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
+                      aria-label="Stop generation"
                     >
                       Stop
                     </button>
@@ -246,6 +249,7 @@ export default function BRDGenerator() {
                   type="text"
                   value={input}
                   onChange={handleInputChange}
+                  aria-label="Chat input"
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
