@@ -1,0 +1,3 @@
+## 2024-07-18 - Prevent Unnecessary Re-renders in Chat Interface
+**Learning:** The chat interface in `app/page.tsx` was re-rendering the entire list of messages every time the `input` or `isLoading` state changed. Since the message components are completely pure based on their props (`message` and `stage`), mapping over them directly causes React to re-evaluate every message component on every keystroke.
+**Action:** Extract the individual message rendering logic into a separate `MessageItem` component and wrap it with `React.memo()`. This ensures that only new or changed messages are re-rendered, significantly improving the performance of the chat interface, especially as the conversation grows.
