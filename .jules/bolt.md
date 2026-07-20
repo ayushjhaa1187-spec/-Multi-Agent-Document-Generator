@@ -1,0 +1,3 @@
+## 2024-05-24 - Optimize React Rendering during Streaming Responses
+**Learning:** During chat interactions involving streaming responses (e.g., using `useChat` from `ai/react`), the entire message list re-renders each time a new token arrives. This can cause unnecessary DOM updates and performance overhead, particularly as the message history grows. In `app/page.tsx`, the `messages.map` logic rendered elements directly without memoization.
+**Action:** Extract the individual message item into a separate `MessageItem` component and wrap it in `React.memo()`. This prevents older messages from re-rendering as long as their props (specifically `message.content` for the actively streaming one) don't change.
