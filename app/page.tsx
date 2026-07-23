@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="projectName" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="projectName"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -243,6 +244,7 @@ export default function BRDGenerator() {
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
                 <input
+                  aria-label="Message input"
                   type="text"
                   value={input}
                   onChange={handleInputChange}
