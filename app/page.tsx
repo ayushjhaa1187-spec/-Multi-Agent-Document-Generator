@@ -19,7 +19,7 @@ function CopyButton({ content }: { content: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="p-1.5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all"
+      className="p-1.5 hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-purple-500 outline-none rounded-lg text-gray-400 hover:text-white transition-all"
       aria-label={copied ? "Copied" : "Copy to clipboard"}
       title={copied ? "Copied!" : "Copy content"}
     >
@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="projectName" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="projectName"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -186,7 +187,8 @@ export default function BRDGenerator() {
                   setMessages([]);
                   stop();
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                aria-label="Change current project"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus-visible:ring-2 focus-visible:ring-purple-500 rounded-md px-2 py-1 outline-none"
               >
                 Change Project
               </button>
@@ -247,6 +249,7 @@ export default function BRDGenerator() {
                   value={input}
                   onChange={handleInputChange}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
+                  aria-label="Message input"
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
                 />
