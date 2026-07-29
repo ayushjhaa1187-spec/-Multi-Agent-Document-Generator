@@ -33,7 +33,8 @@ class AnalyticsTracker {
    * Generate a unique session ID
    */
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Security Fix: Use crypto.randomUUID() for secure session identifiers instead of Math.random()
+    return `session_${Date.now()}_${crypto.randomUUID()}`;
   }
 
   /**

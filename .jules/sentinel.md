@@ -1,0 +1,4 @@
+## 2026-07-29 - Use Secure Random Generation (CSPRNG) for Session IDs
+**Vulnerability:** The application was using the highly predictable `Math.random()` function to generate session IDs (`lib/analytics.ts`), which is insecure and could allow attackers to guess session identifiers.
+**Learning:** In Node.js / web contexts, predictable random number generation functions shouldn't be used for anything security-critical, like sessions, tokens, or passwords. Using native crypto APIs (e.g. `crypto.randomUUID()` or `crypto.getRandomValues()`) guarantees cryptographically secure pseudo-random number generation.
+**Prevention:** Always use Node's `crypto` module (`crypto.randomUUID()` or `crypto.randomBytes()`) for generating unpredictable tokens. Set up linting rules (like `eslint-plugin-security`) that warn when `Math.random()` is used for identifiers.
