@@ -1,7 +1,8 @@
 'use client';
 
 import { useChat } from 'ai/react';
-import { useState, useEffect } from 'react';
+import type { Message } from 'ai';
+import React, { useState, useEffect } from 'react';
 
 function CopyButton({ content }: { content: string }) {
   const [copied, setCopied] = useState(false);
@@ -31,6 +32,38 @@ function CopyButton({ content }: { content: string }) {
     </button>
   );
 }
+
+// ⚡ Bolt Performance Optimization:
+// Extracted individual message item into a React.memo component.
+// This prevents O(n) DOM re-renders of the entire message history
+// during streaming token updates from useChat, significantly
+// reducing CPU usage and improving UI responsiveness.
+const MessageItem = React.memo(({ message, stage }: { message: Message, stage: string }) => (
+  <div
+    className={`p-4 sm:p-5 rounded-xl fade-in ${
+      message.role === 'user'
+        ? 'message-user ml-0 sm:ml-8 text-white'
+        : 'message-assistant mr-0 sm:mr-8 text-gray-100'
+    }`}
+  >
+    <div className="flex justify-between items-start mb-2">
+      <div className="font-semibold text-xs sm:text-sm text-gray-300">
+        {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
+      </div>
+      {message.role !== 'user' && (
+        <CopyButton content={message.content} />
+      )}
+    </div>
+    <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
+      {message.content}
+    </div>
+  </div>
+), (prevProps, nextProps) => {
+  return prevProps.message.content === nextProps.message.content &&
+         prevProps.message.role === nextProps.message.role &&
+         prevProps.stage === nextProps.stage;
+});
+MessageItem.displayName = 'MessageItem';
 
 export default function BRDGenerator() {
   const [projectName, setProjectName] = useState('');
@@ -202,26 +235,7 @@ export default function BRDGenerator() {
 
               <div className="space-y-4">
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`p-4 sm:p-5 rounded-xl fade-in ${
-                      message.role === 'user'
-                        ? 'message-user ml-0 sm:ml-8 text-white'
-                        : 'message-assistant mr-0 sm:mr-8 text-gray-100'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="font-semibold text-xs sm:text-sm text-gray-300">
-                        {message.role === 'user' ? '😊 You' : stage === 'clarify' ? '🤔 BRD Planner' : '📝 Requirement Writer'}
-                      </div>
-                      {message.role !== 'user' && (
-                        <CopyButton content={message.content} />
-                      )}
-                    </div>
-                    <div className="whitespace-pre-wrap leading-relaxed text-sm sm:text-base">
-                      {message.content}
-                    </div>
-                  </div>
+                  <MessageItem key={message.id} message={message} stage={stage} />
                 ))}
 
                 {isLoading && (
