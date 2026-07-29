@@ -33,7 +33,12 @@ class AnalyticsTracker {
    * Generate a unique session ID
    */
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Security Fix: Use CSPRNG for secure session identifiers where available
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return `session_${Date.now()}_${crypto.randomUUID()}`;
+    }
+    // Fallback for environments lacking crypto.randomUUID (e.g. very old browsers, Node 18 without global crypto)
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**
