@@ -150,7 +150,7 @@ export default function BRDGenerator() {
                 type="submit"
                 disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
                 aria-disabled={projectNameInput.trim().length < 3 || projectNameInput.trim().length > 100}
-                className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed disabled:opacity-60 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base"
+                className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed disabled:opacity-60 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg text-sm sm:text-base focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 outline-none"
               >
                 Continue to Project Details →
               </button>
@@ -186,7 +186,8 @@ export default function BRDGenerator() {
                   setMessages([]);
                   stop();
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus:ring-2 focus:ring-white/50 rounded px-2 py-1 outline-none -mr-2"
+                aria-label="Change current project"
               >
                 Change Project
               </button>
@@ -230,7 +231,8 @@ export default function BRDGenerator() {
                     <span>Generating response...</span>
                     <button
                       onClick={() => stop()}
-                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors"
+                      className="text-xs ml-auto px-3 py-1 bg-red-500/30 hover:bg-red-500/50 rounded-lg text-red-300 transition-colors focus:ring-2 focus:ring-red-400 outline-none"
+                      aria-label="Stop generating response"
                     >
                       Stop
                     </button>
@@ -253,7 +255,8 @@ export default function BRDGenerator() {
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-900 outline-none"
+                  aria-label={isLoading ? "Sending message" : "Send message"}
                 >
                   {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
                 </button>
