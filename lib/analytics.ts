@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 /**
  * Analytics tracking utility for user events and application metrics
  */
