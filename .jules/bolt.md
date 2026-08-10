@@ -1,0 +1,3 @@
+## 2024-12-14 - Prevent re-renders in chat interface
+**Learning:** Extracting an inline functional component block into a top-level `memo()` component significantly reduces unnecessary re-renders in long list rendering structures like a chat interface. In React, inline callbacks or components created during render are recreated on every parent re-render, whereas extracted components wrapped in `memo()` are re-rendered only when their explicit props (`message`, `stage`) change.
+**Action:** Extract list item rendering logic from `.map()` blocks into separate components wrapped with `React.memo` for chat message or list components that undergo frequent re-renders due to parent state changes.
