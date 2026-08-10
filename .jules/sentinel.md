@@ -1,0 +1,4 @@
+## 2026-08-10 - Prevent Stack Trace Leakage in Analytics
+**Vulnerability:** Information Disclosure (Medium Priority). The `analyticsTracker.trackError` method was including raw stack traces (`error.stack`) in analytics events. Since the `/api/analytics` endpoint exposes these events without authentication, this could leak sensitive internal server details (e.g., file paths, module versions) to potential attackers.
+**Learning:** Analytics mechanisms often blindly capture full error objects for debugging purposes. However, when analytics data is exposed or stored insecurely, this debugging convenience becomes an information leakage vulnerability. We must actively sanitize error payloads before logging them.
+**Prevention:** Ensure that error tracking systems only record safe, generalized error messages or codes, and explicitly exclude properties like `.stack` or `.config` that contain internal execution details.
