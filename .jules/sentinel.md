@@ -1,0 +1,4 @@
+## 2026-08-12 - Prevent Sensitive Error Stack Trace Exposure in Analytics
+**Vulnerability:** The analytics tracker in `lib/analytics.ts` was capturing and storing error stack traces (`error.stack`) in plain text when errors occurred.
+**Learning:** This is a security risk because error stack traces can expose sensitive information about the internal structure of the application, file paths, dependencies, and environment variables. If analytics logs are accessed by unauthorized users, this could lead to information disclosure.
+**Prevention:** Avoid capturing stack traces for generic errors in client-side or publicly accessible analytics. Instead, log stack traces securely on the server side using dedicated logging tools with appropriate access controls. Only track generic error messages or predefined error codes in analytics.
