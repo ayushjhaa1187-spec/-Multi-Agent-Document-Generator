@@ -247,15 +247,27 @@ export default function BRDGenerator() {
                   value={input}
                   onChange={handleInputChange}
                   placeholder={stage === 'clarify' ? 'Describe your requirements in detail...' : 'Provide additional implementation details...'}
+                  aria-label={stage === 'clarify' ? 'Describe your requirements in detail' : 'Provide additional implementation details'}
                   className="flex-1 px-4 sm:px-6 py-3 sm:py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all text-sm sm:text-base"
                   disabled={isLoading}
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
+                  aria-label={isLoading ? 'Sending message' : 'Send message'}
+                  className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base flex items-center gap-2"
                 >
-                  {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-white/80 border-t-transparent rounded-full" aria-hidden="true" />
+                      Sending
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <span aria-hidden="true">📤</span>
+                      Send
+                    </span>
+                  )}
                 </button>
               </div>
 
