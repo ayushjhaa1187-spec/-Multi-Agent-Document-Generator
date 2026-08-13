@@ -116,10 +116,11 @@ export default function BRDGenerator() {
           <div className="mb-8">
             <form onSubmit={handleProjectNameSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="mb-6">
-                <label className="block text-white text-lg sm:text-xl font-semibold mb-4">
+                <label htmlFor="project-name" className="block text-white text-lg sm:text-xl font-semibold mb-4">
                   📋 Project Name
                 </label>
                 <input
+                  id="project-name"
                   type="text"
                   value={projectNameInput}
                   onChange={(e) => setProjectNameInput(e.target.value)}
@@ -160,7 +161,11 @@ export default function BRDGenerator() {
 
         {/* Error Display */}
         {error && (
-          <div className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in">
+          <div
+            className="error-container backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 shadow-xl animate-in"
+            role="alert"
+            aria-live="assertive"
+          >
             <p className="text-red-300 font-semibold text-sm sm:text-base mb-2">
               {error.includes('💰') ? '⚠️ API Issue' : error.includes('🔑') ? '⚠️ Configuration Issue' : '⚠️ Error'}
             </p>
@@ -243,6 +248,7 @@ export default function BRDGenerator() {
             <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 shadow-2xl">
               <div className="flex gap-2 sm:gap-4 mb-4">
                 <input
+                  aria-label={stage === 'clarify' ? 'Describe your requirements' : 'Provide additional details'}
                   type="text"
                   value={input}
                   onChange={handleInputChange}
@@ -252,10 +258,20 @@ export default function BRDGenerator() {
                 />
                 <button
                   type="submit"
+                  aria-label={isLoading ? 'Sending message' : 'Send message'}
                   disabled={isLoading || !input.trim()}
                   className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-600 text-white font-bold rounded-xl transition-all duration-200 transform hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:scale-100 shadow-lg text-sm sm:text-base"
                 >
-                  {isLoading ? '⏳' : '📤'} {isLoading ? 'Sending' : 'Send'}
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" aria-hidden="true" />
+                      Sending
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      📤 Send
+                    </span>
+                  )}
                 </button>
               </div>
 
