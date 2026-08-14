@@ -1,6 +1,13 @@
 import { analyticsTracker } from '@/lib/analytics';
 
-export async function GET() {
+export async function GET(req: Request) {
+  const authHeader = req.headers.get('authorization');
+  if (!process.env.ADMIN_SECRET || authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
   const metrics = analyticsTracker.getMetrics();
   const sessionInfo = analyticsTracker.getSessionInfo();
 
