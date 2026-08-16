@@ -180,13 +180,17 @@ export default function BRDGenerator() {
               </div>
               <button
                 onClick={() => {
+                  if (messages.length > 0 && !window.confirm('Are you sure you want to change projects? Your current chat history will be lost.')) {
+                    return;
+                  }
                   setProjectName('');
                   setProjectNameInput('');
                   setStage('clarify');
                   setMessages([]);
                   stop();
                 }}
-                className="text-gray-400 hover:text-white text-sm transition-colors"
+                className="text-gray-400 hover:text-white text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 rounded px-2 py-1 -mx-2"
+                aria-label="Change project and clear current history"
               >
                 Change Project
               </button>
